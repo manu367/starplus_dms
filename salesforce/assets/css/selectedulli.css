@@ -1,0 +1,44 @@
+#navigation ul
+{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+#navigation ul li
+{
+	background:url(images/rowBackSmall.gif) no-repeat;
+	color: #FFFFFF;
+}
+#navigation li a
+{
+	font-size: 10px;
+	line-height: 16px;
+	display: inline;
+	background-image:url(images/rowBackSmallB_Normal.gif);
+	padding-left: 10px;
+	background-position:left;
+	background-repeat:no-repeat;
+	text-decoration: none;
+	color: #FFF;
+}
+li.selected a
+{
+	font-size: 10px;
+	line-height: 16px;
+	display: inline;
+	background-image:url(images/rowBackSmallB_Event.gif);
+	padding-left: 10px;
+	background-position:left;
+	background-repeat:no-repeat;
+	text-decoration: none;
+	color: #0099cc;
+}
+#navigation li a:hover
+{
+	padding-left: 10px;
+	background-image:url(images/rowBackSmallB_Event.gif);
+	background-position:left;
+	background-repeat:no-repeat;
+	color: #0099cc;
+	text-decoration: underline;
+}

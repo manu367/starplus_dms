@@ -1,0 +1,181 @@
+<?php
+require_once("../config/config.php");
+@extract($_POST);
+////// filters value/////
+$filter_str = "";
+if($_REQUEST['selyear'] !=''){
+	$filter_str	.= " AND year = '".$_REQUEST['selyear']."'";
+}
+if($_REQUEST['selmonth'] !=''){
+	$mnth = date("m", strtotime($_REQUEST["selmonth"]."-".$_REQUEST["selyear"]));
+	$filter_str	.= " AND month = '".$mnth."'";
+}
+if($_REQUEST['user_id'] !=''){
+	$filter_str	.= " AND user_id = '".$_REQUEST['user_id']."'";
+}
+$child = getHierarchyStr($_SESSION["userid"], $link1, "");
+//////End filters value/////
+?>
+<!DOCTYPE html>
+<html>
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <script src="../js/jquery-1.10.1.min.js"></script>
+ <link href="../css/font-awesome.min.css" rel="stylesheet">
+ <link href="../css/abc.css" rel="stylesheet">
+ <script src="../js/bootstrap.min.js"></script>
+ <link href="../css/abc2.css" rel="stylesheet">
+ <link rel="stylesheet" href="../css/bootstrap.min.css">
+ <link rel="stylesheet" href="../css/bootstrap-select.min.css">
+ <script src="../js/bootstrap-select.min.js"></script>
+ <link rel="stylesheet" href="../css/jquery.dataTables.min.css">
+ <script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+ <script>
+$(document).ready(function(){
+    $('#myTable').dataTable();
+});
+</script>
+<title><?=siteTitle?></title>
+</head>
+<body>
+<div class="container-fluid">
+  <div class="row content">
+	<?php 
+    include("../includes/leftnav2.php");
+    ?>
+    <div class="col-sm-9 tab-pane fade in active table-responsive" id="home">
+      <h2 align="center"><i class="fa fa-bullseye"></i> Target </h2>
+     <?php if($_REQUEST['msg']!=''){?>
+      	<h4 align="center">
+        	<span 
+			<?php if($_REQUEST['sts']=="success"){ echo "class='info-success' style='color: #090;'"; } if($_REQUEST['sts']=="fail"){ echo "class='info-fail' style='color:#FF0033'";} else echo "class='info-fail' style='color:#FF0033'";?>>
+			<?php echo $_REQUEST['msg'];?>
+			</span>
+        </h4>
+	  <?php }?>
+      <form class="form-horizontal" role="form" name="form1" action="" method="post">
+        <div class="row">
+            <div class="col-sm-3 col-md-3 col-lg-3"><label class="col-md-6">Year</label>
+                <select name="selyear" id="selyear" class="form-control" onChange="document.form1.submit();">
+					<?php 
+                    for($i=0; $i<3; $i++){ 
+                        $year = date('Y', strtotime(date("Y"). ' - '.$i.' year'));
+                    ?>
+                    <option value="<?=$year?>"<?php if($_REQUEST["selyear"]==$year){ echo "selected";}?>><?=$year?></option>
+                    <?php } ?>
+                </select>
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3"><label class="col-md-9">Month</label>
+                <select name="selmonth" id="selmonth" class="form-control" onChange="document.form1.submit();">
+					<?php 
+                    ///// check if current year is selected then month should be come till current month
+                    //if($_REQUEST["selyear"]==date("Y")){ $nmonth = date("m", strtotime(date("F")."-".$_REQUEST["selyear"]));}else if($_REQUEST["selyear"]==""){$nmonth = date("m", strtotime(date("F")."-".date("Y")));}else{ $nmonth = 12;}
+					$nmonth = 12;
+                    for($j=0; $j<$nmonth; $j++){ 
+                        if($_REQUEST["selyear"]==date("Y") || $_REQUEST["selyear"]==""){$month = date ( 'F' , strtotime ( "-".$j." month"	 , strtotime ( date("Y-F") ) ));}else{$month = date('F', strtotime(date("Y-F"). ' + '.$j.' month'));}
+                    ?>
+                    <option value="<?=$month?>"<?php if($_REQUEST["selmonth"]==$month){ echo "selected";}?>><?=$month?></option>
+                    <?php } ?>
+                </select>
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3"><label class="col-md-9">Employee Name</label>
+                <select name="user_id" id="user_id" class="form-control selectpicker" data-live-search="true"  onChange="document.form1.submit();">
+                        <option value="">--Please select--</option>
+                        <?php
+						if($_SESSION["userid"]=="admin"){
+							$sql = mysqli_query($link1, "SELECT username,name,oth_empid FROM admin_users where 1 order by name");
+						}else{
+							$sql = mysqli_query($link1, "SELECT username,name,oth_empid FROM admin_users where 1 AND (username IN ('".str_replace(",","','",$child)."') OR username='".$_SESSION["userid"]."') order by name");
+							//$sql = mysqli_query($link1, "SELECT username,name,oth_empid FROM admin_users where 1 AND (reporting_manager='".$_SESSION["userid"]."' OR username='".$_SESSION["userid"]."') order by name");
+							
+						}
+                        while ($row = mysqli_fetch_assoc($sql)) {
+                        ?>
+                        <option value="<?= $row['username']; ?>" <?php if ($_REQUEST['user_id'] == $row['username']) { echo "selected";}?>><?= $row['name']." | ".$row['username']." ".$row['oth_empid'];?></option>
+                        <?php } ?>
+                    </select>
+            </div>
+            <div class="col-sm-2 col-md-2 col-lg-2"><label class="col-md-6">&nbsp;</label><br/>
+                <input name="pid" id="pid" type="hidden" value="<?=$_REQUEST['pid']?>"/>
+                <input name="hid" id="hid" type="hidden" value="<?=$_REQUEST['hid']?>"/>
+                <input name="Submit" type="submit" class="btn<?=$btncolor?>" value="GO"  title="Go!">
+            </div>
+            <div class="col-sm-1 col-md-1 col-lg-1"><br/>
+                <a href="../reports/excelexport.php?rname=<?= base64_encode("targetReport") ?>&rheader=<?= base64_encode("Target Report") ?>&user_id=<?= base64_encode($_REQUEST['user_id']) ?>&selyear=<?= base64_encode($_REQUEST['selyear']) ?>&selmonth=<?= base64_encode($_REQUEST['selmonth']) ?>" title="Export details in excel" class="text-success"><i class="fa fa-file-excel-o fa-2x" title="Export details in excel"></i></a>
+            </div>
+          </div>
+        </form>
+        <br/>
+      <form class="form-horizontal" role="form">
+		<div style="display:inline-block;float:right">
+        <button title="Upload Target" type="button" class="btn btn-primary" style="float:right;" onClick="window.location.href='target_upload.php?<?=$pagenav?>'"><span>Upload Target</span></button>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+         <div style="display:inline-block;float:right">
+        <button title="Add Target" type="button" class="btn btn-primary" style="float:right;" onClick="window.location.href='target_add.php?op=add<?=$pagenav?>'"><span>Add Target</span></button>
+        </div>
+      <div class="form-group"  id="page-wrap" style="margin-left:10px;"><br/><br/>
+       <table  width="98%" id="myTable" class="table-striped table-bordered table-hover" align="center">
+          <thead>
+            <tr class="<?=$tableheadcolor?>">
+              <th style="text-align:center;" data-class="expand"><a href="#" name="entity_id" title="asc" ></a>S.No</th>
+			  <th style="text-align:center;" ><a href="#" name="name" title="asc" ></a>Target No.</th>
+              <th style="text-align:center;" ><a href="#" name="name" title="asc" ></a>Emp Name</th>
+              <th style="text-align:center;" ><a href="#" name="name" title="asc" ></a>Month</th>
+              <th style="text-align:center;" ><a href="#" name="name" title="asc" ></a>Year</th>
+              <th style="text-align:center;" ><a href="#" name="name" title="asc" ></a>Type</th>
+              <th style="text-align:center;" data-hide="phone,tablet"><a href="#" name="name" title="asc" class="not-sort"></a>Status</th>
+              <th style="text-align:center;" data-hide="phone,tablet"><a href="#" name="name" title="asc" class="not-sort"></a>View</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+			$sno=0;
+			if($_SESSION["userid"]=="admin"){
+				$sql = mysqli_query($link1, "SELECT * FROM sf_target_master WHERE 1 ".$filter_str." ORDER BY id DESC");
+			}else{
+			//echo "SELECT * FROM sf_target_master WHERE 1 ".$filter_str." AND (user_id IN (SELECT username FROM admin_users WHERE reporting_manager='".$_SESSION["userid"]."') OR user_id='".$_SESSION["userid"]."') order by name";
+				$sql = mysqli_query($link1, "SELECT * FROM sf_target_master WHERE 1 ".$filter_str." AND (user_id IN ('".str_replace(",","','",$child)."') OR user_id='".$_SESSION["userid"]."') ORDER BY id DESC");
+			}
+			while($row=mysqli_fetch_assoc($sql)){
+				  $sno=$sno+1;
+			?>
+            <tr class="even pointer">
+              <td style="text-align:center;" ><?php echo $sno;?></td>
+			  <td style="text-align:left;" ><?php echo $row['target_no']; ?></td>
+              <td><?php echo getAnyDetails($row['user_id'],'name','username','admin_users',$link1)." | ".$row['emp_id']; ?></td>
+              <td style="text-align:center;" >
+			  	<?php 
+					if($row['month'] == '01'){ echo "JAN"; }
+					else if($row['month'] == '02'){ echo "FEB"; }
+					else if($row['month'] == '03'){ echo "MAR"; }
+					else if($row['month'] == '04'){ echo "APR"; }
+					else if($row['month'] == '05'){ echo "MAY"; }
+					else if($row['month'] == '06'){ echo "JUN"; }
+					else if($row['month'] == '07'){ echo "JUL"; }
+					else if($row['month'] == '08'){ echo "AUG"; }
+					else if($row['month'] == '09'){ echo "SEP"; }
+					else if($row['month'] == '10'){ echo "OCT"; }
+					else if($row['month'] == '11'){ echo "NOV"; }
+					else if($row['month'] == '12'){ echo "DEC"; }
+					else{}
+				?>
+              </td>
+              <td style="text-align:center;" ><?php echo $row['year']; ?></td>
+              <td><?php echo $row['target_type']; ?></td>
+              <td style="text-align:center;" ><?php echo $row['status']; ?></td>
+              <td align="center"><a href='target_view.php?id=<?php echo base64_encode($row['id']);?><?=$pagenav?>'  title='View'><i class="fa fa-eye fa-lg" title="View"></i></a></td>
+            </tr>
+            <?php }?>
+          </tbody>
+          </table>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<?php
+include("../includes/footer.php");
+include("../includes/connection_close.php");
+?>
+</body>
+</html>

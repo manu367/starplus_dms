@@ -1,0 +1,49 @@
+/* Set height of the grid so .sidenav can be 100% (adjust if needed) */
+    .row.content {height: 1000px;}
+    
+    /* Set gray background color and 100% height */
+    .sidenav {
+      background-color: #f1f1f1;
+      height: 100%;
+    }
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #555;
+      color: white;
+      padding: 15px;
+    }
+	/* header css  */
+	.heading1 {
+		color: #fff !important;
+		background-color: #337ab7 !important;
+    	border-color: #2e6da4 !important;
+	}
+	.bg-primary1 {
+		color: #fff!important;
+		background-color: #337ab7!important;
+		border-color: #2e6da4!important;
+	}
+	input[type="file"] {
+		height: auto!important;
+		padding: 1px 1px!important;
+	}
+	/*.panel-info {
+    	border-color: #2e6da4 !important;
+	}*/
+	/** icon spin **/
+	.fa-spin {
+		-webkit-animation: spin 2s infinite linear;
+		-moz-animation: spin 2s infinite linear;
+		-o-animation: spin 2s infinite linear;
+		animation: spin 2s infinite linear;
+	}
+    
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    @media screen and (max-width: 767px) {
+      .sidenav {
+        height: auto;
+        padding: 15px;
+      }
+      .row.content {height: auto;} 
+    }

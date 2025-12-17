@@ -1,0 +1,10 @@
+<?php
+session_start();
+session_destroy();
+if($_REQUEST['errcode']){
+	$msg=$_REQUEST['errcode'];
+}else{
+	$msg='1';
+}
+header("Location:index.php?msg=".$msg);
+?>

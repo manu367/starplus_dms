@@ -1,0 +1,202 @@
+<?php
+print("\n");
+print("\n");
+
+	$user_id = base64_decode($_REQUEST['user_id']);
+	$selyear = base64_decode($_REQUEST['selyear']);
+	$selmonth = base64_decode($_REQUEST['selmonth']);
+?>
+<table width="100%" border="1" cellpadding="2" cellspacing="1" bordercolor="#000000">
+    <tr align="left" style="background-color:#396; color:#FFFFFF;font-size:13px;font-family:Verdana, Arial, Helvetica, sans-serif;font-weight:normal;vertical-align:central">
+        <td height="25"><strong>S.No.</strong></td>
+        <th>Employee Name</th>
+        <th>Employee Id</th>
+        <th>User Id</th>
+        <th>Designation</th>
+        <th>Department</th>
+        <th>Sub-Department</th>
+        <th>Year</th>
+        <th>Month</th>
+        <th>Product Sub Category</th>
+        <th>Task Name</th>
+        <th>Remark</th>
+        <th>Target Value</th>
+		<th>Target (Description)</th>
+        <th>Achivement - Self</th>
+		<th>Achivement - Self (Description)</th>
+        <th>Achivement - Team</th>
+		<th>Achivement - Team (Description)</th>
+        <!--<th>Achivement %</th>-->
+		<th>Achivement (Description)</th>
+    </tr>
+<?php
+	function getAchivement($link1, $id, $task_name, $m, $year,$psc){
+
+		$month = date("m", strtotime($m."-".$year));					
+		$resp = 0;
+		if($task_name == "Dealer Visit"){
+			//// calculate from old dealer vist
+			$row_oldcnt =  mysqli_fetch_assoc(mysqli_query($link1,"SELECT COUNT(id) AS olddealer FROM dealer_visit WHERE userid='".$id."' AND MONTH(visit_date) = '".$month."' AND YEAR(visit_date) = '".$year."' AND dealer_type='Old'"));
+			//// calculate from new dealer vist
+			$row_newcnt =  mysqli_fetch_assoc(mysqli_query($link1,"SELECT COUNT(id) AS newdealer FROM dealer_visit WHERE userid='".$id."' AND MONTH(visit_date) = '".$month."' AND YEAR(visit_date) = '".$year."' AND dealer_type='New'"));
+			
+			//echo "Old Visit -> ".$row_oldcnt["olddealer"];
+			//echo "<br>";
+			//echo "New Visit -> ".$row_newcnt["newdealer"];
+			//$ach = $row_oldcnt["olddealer"] + $row_newcnt["newdealer"];
+			$resp = $row_oldcnt["olddealer"]."~".$row_newcnt["newdealer"];
+		}
+		else if($task_name == "Feedback"){
+			/// get feedback count
+			$row_fb =  mysqli_fetch_assoc(mysqli_query($link1,"SELECT COUNT(id) AS feedback FROM query_master WHERE entry_by='".$id."' AND MONTH(entry_date) = '".$month."' AND YEAR(entry_date) = '".$year."'"));
+			//if($row_fb["feedback"]){ echo $ach = $row_fb["feedback"];}else{echo $ach = 0;}
+			$resp = $row_fb["feedback"];
+		}
+		else if($task_name == "Sale Order"){
+			/// get sale order count (pri)
+			$row_so_pri =  mysqli_fetch_assoc(mysqli_query($link1,"SELECT SUM(req_qty) AS socnt FROM purchase_order_data WHERE po_no IN (SELECT po_no FROM purchase_order_master WHERE sale_type = 'PRIMARY' AND create_by='".$id."' AND MONTH(entry_date) = '".$month."' AND YEAR(entry_date) = '".$year."' AND status IN ('Approved','Processed')) AND prod_code IN (SELECT productcode FROM product_master WHERE productsubcat IN (SELECT psubcatid FROM product_sub_category WHERE prod_sub_cat='".$psc."'))"));
+			//if($row_so["socnt"]){ echo $ach = $row_so["socnt"];}else{echo $ach = 0;}
+			//$resp = $row_so["socnt"];
+			
+			/// get sale order count (sec)
+			$row_so_sec =  mysqli_fetch_assoc(mysqli_query($link1,"SELECT SUM(req_qty) AS socnt FROM purchase_order_data WHERE po_no IN (SELECT po_no FROM purchase_order_master WHERE sale_type = 'SECONDARY' AND create_by='".$id."' AND MONTH(entry_date) = '".$month."' AND YEAR(entry_date) = '".$year."' AND status IN ('Approved','Processed')) AND prod_code IN (SELECT productcode FROM product_master WHERE productsubcat IN (SELECT psubcatid FROM product_sub_category WHERE prod_sub_cat='".$psc."'))"));
+			
+			$resp = $row_so_pri["socnt"]."~".$row_so_sec["socnt"];
+		}
+		else if($task_name == "Collection"){
+			/// get collection count
+			$row_col =  mysqli_fetch_assoc(mysqli_query($link1,"SELECT SUM(amount) AS collection FROM party_collection WHERE user_id='".$id."' AND MONTH(entry_date) = '".$month."' AND YEAR(entry_date) = '".$year."'"));
+			//if($row_col["collection"]){ echo $ach = $row_col["collection"];}else{echo $ach = 0;}
+			$resp = $row_col["collection"];	
+		}
+		else{
+			
+		}
+		return $resp;
+	}
+
+	function getDlAchive($link1, $id, $task, $m, $y ,$subcat){
+		$resp = 0;
+		$dmode = ($task == 'Dealer Visit' || $task == 'Sale Order')?true:false;
+		$childs = getHierarchy($id, $link1);
+		foreach($childs as $child){
+			
+			foreach($child as $key => $subchilds){
+				if($subchilds){
+					$achived = getDlAchive($link1, $key, $task, $m, $y ,$subcat);
+					$ge_ach = getAchivement($link1, $key, $task, $m, $y, $subcat);
+					if($dmode)
+					{
+						$achived = explode('~', $achived);
+						$ge_ach = explode('~', $ge_ach);
+						$resp += $achived[0]+$ge_ach[0].'~'.$achived[1]+$ge_ach[1];
+					}
+					else
+					{
+						$resp += $achived+$ge_ach;
+					}
+				}
+				else{
+					$ge_ach = getAchivement($link1, $key, $task, $m, $y, $subcat);
+					if($dmode)
+					{
+						$resp = $ge_ach;
+					}
+					else
+					{
+						$resp += ($ge_ach)?(int)$ge_ach:0;
+					}
+				}									
+			}
+		}
+		return $resp;								
+	}
+	function printTask($link1, $id, $m, $y){
+		$achivement = 0;
+		$month = date("m", strtotime($m."-".$y));
+		$sql = "SELECT * FROM sf_target_data WHERE user_id = '".$id."' AND month='".$month."' AND year='".$y."' AND status='Active'";
+		$invcnt_res = mysqli_query($link1, $sql);
+		if($invcnt_res){
+			if(mysqli_num_rows($invcnt_res) > 0){
+				$count = 1;
+				while($row = mysqli_fetch_assoc($invcnt_res)){
+				
+					$desc_self = $desc_team = 'n/a';
+					$dmode = ($row['task_name'] == 'Dealer Visit' || $row['task_name'] == 'Sale Order')?true:false;
+					$only_so = ($row['task_name'] == 'Sale Order')?true:false;
+					
+					$userinfo = getAnyDetails($id,'name','username','admin_users',$link1);
+					
+					$achivement = getAchivement($link1, $id, $row['task_name'], $m, $y,$row["prod_code"]);
+					
+					if($dmode){
+						$ac_arr = explode("~", $achivement);
+						$desc_self = ($row['task_name'] == 'Dealer Visit')?("Old: ".(int)$ac_arr[0].", New: ".(int)$ac_arr[1]):(($row['task_name'] == 'Sale Order')?("Primary: ".(int)$ac_arr[0].", Secondary: ".(int)$ac_arr[1]):("n/a"));
+						$achivement = (int)$ac_arr[0] + (int)$ac_arr[1];
+					}
+					
+					$dl_achivement = getDlAchive($link1, $id, $row['task_name'], $m, $y,$row["prod_code"]);
+					
+					if($dmode){
+						$dlac_arr = explode("~", $dl_achivement);
+						$t_a = (int)$ac_arr[0] + (int)$dlac_arr[0];
+						$t_b = (int)$ac_arr[1] + (int)$dlac_arr[1];
+						$desc_team = ($row['task_name'] == 'Dealer Visit')?("Old: ".$t_a.", New: ".$t_b):(($row['task_name'] == 'Sale Order')?("Primary: ".$t_a.", Secondary: ".$t_b):("n/a"));
+						
+						$dl_achivement = (int)$dlac_arr[0] + (int)$dlac_arr[1];
+					}
+
+					
+					$total_ac = (int)$achivement + (int)$dl_achivement;
+					
+					$target = $row['target_val'];
+					$per = round(($total_ac * 100) / $target);
+					
+					$target_remark = "";
+					$per_desc = "";
+					if($only_so){
+						$remark_arr = explode(" ",$row['remark']);
+						$p_target = str_replace("P-","", $remark_arr[0]);
+						$s_target = str_replace("S-","", $remark_arr[1]);
+						$target_remark = "Primary: ".$p_target.", Secondary: ".$s_target;
+						$p_ach = (int)$ac_arr[0] + (int)$dlac_arr[0];
+						$s_ach = (int)$ac_arr[1] + (int)$dlac_arr[1];
+						$p_per = ($p_target > 0)?round(($p_ach * 100) / $p_target):0;
+						$s_per = ($s_target > 0)?round(($s_ach * 100) / $s_target):0;
+						$per_desc = "Primary: ".$p_per."%, Secondary: ".$s_per."%"; 
+					}
+					
+					$user_info = explode("~", getAnyDetails($id,"designationid,department,subdepartment","username","admin_users",$link1));
+					
+					$desig = getAnyDetails($user_info[0],"designame","designationid","hrms_designation_master",$link1);
+					$depart = getAnyDetails($user_info[1],"dname","departmentid","hrms_department_master",$link1);
+					$subdepart = getAnyDetails($user_info[2],"subdept","subdeptid","hrms_subdepartment_master",$link1);
+		
+					echo '<tr><td>'.$count.'</td><td>'.$userinfo.'</td><td>'.$row['emp_id'].'</td><td>'.$id.'</td><td>'.$desig.'</td><td>'.$depart.'</td><td>'.$subdepart.'</td><td>'.$row['year'].'</td><td>'.$row['month'].'</td><td>'.$row['prod_code'].'</td><td>'.$row['task_name'].'</td><td>'.$row['remark'].'</td><td>'.$row['target_val'].'</td><td>'.$target_remark.'</td><td>'.(($achivement)?(int)$achivement:0).'</td><td>'.$desc_self.'</td><td>'.$total_ac.'</td><td>'.$desc_team.'</td><td>'.$per_desc.'</td></tr>';
+					$count++;
+				}
+			}
+			else{
+				//echo "<br>NO task!<br>";
+			}
+		}
+		else{
+			//echo "failed<br>";
+		}				
+	}							
+	function printRow($link1, $arr, $m, $y){
+		foreach($arr as $key => $value){
+			if(strlen($key) > 5){
+				printTask($link1, $key, $m, $y);
+				printRow($link1, $value, $m, $y);
+			}
+			else{
+				printRow($link1, $value, $m, $y);
+			}							
+		}
+	}
+	$arr = getHierarchy($user_id, $link1);
+	$arr = [[ $user_id => $arr  ]];
+	printRow($link1, $arr, $selmonth, $selyear);
+?>
+</table>

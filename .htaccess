@@ -1,0 +1,22 @@
+<IfModule mod_headers.c>
+	# X-XSS-Protection
+	Header set X-XSS-Protection "1; mode=block"
+	# X-Frame-Options
+	Header set X-Frame-Options "SAMEORIGIN"
+	# X-Content-Type-Options
+	Header set X-Content-Type-Options "nosniff"
+	# Strict-Transport-Security
+	Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+	# Referrer-Policy
+	Header set Referrer-Policy "same-origin"
+	# Content-Security-Policy
+	# Header set Content-Security-Policy "default-src 'self' data: 'unsafe-inline' *.cansale.in *.bootstrapcdn.com *.googleapis.com *.google.com fonts.googleapis.com; img-src 'self' data: 'unsafe-inline' *.cansale.in *.bootstrapcdn.com *.googleapis.com *.gstatic.com *.google.com fonts.googleapis.com; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.cansale.in *.googleapis.com *.google.com fonts.googleapis.com; style-src 'self' 'unsafe-inline' *.cansale.in *.bootstrapcdn.com *.googleapis.com *.gstatic.com *.google.com fonts.googleapis.com"
+	# Permissions-Policy
+	# Header always set Permissions-Policy "geolocation=(); midi=();notifications=();push=();sync-xhr=();accelerometer=(); gyroscope=(); magnetometer=(); payment=(); camera=(); microphone=();usb=(); xr=();speaker=(self);vibrate=();fullscreen=(self);"
+	#Header always set Permissions-Policy "fullscreen=(self),geolocation=(),midi=(),notifications=(),push=(),sync-xhr=(),accelerometer=(), gyroscope=(),magnetometer=(),payment=(),camera=(),microphone=(),usb=(),xr=(),speaker=(),vibrate=()"
+	Header always set Permissions-Policy "fullscreen=(self),geolocation=()"
+</IfModule>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+ </IfModule>
