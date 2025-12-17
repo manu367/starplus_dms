@@ -1,8 +1,8 @@
 <?php 
-$db_user = 'skm_db_usr';
-$db_pass = '%0e5O7qm6';
+$db_user = 'root';
+$db_pass = '';
 $db_host = 'localhost';
-$db = "sukam_cansale_dms";
+$db = "star_plus";
 $link1 = mysqli_connect($db_host, $db_user, $db_pass,$db) or die("Unable to connect to MySQL");
 //$selected = mysqli_select_db("candms",$link1) or die("Could not select DB");
 /*			##############################	TIME Diffrence US to INDIA		####################*/
