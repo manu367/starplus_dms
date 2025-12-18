@@ -187,6 +187,7 @@ $result = mysqli_query($link1, $sql);
                             <th>Installation Date</th>
                             <th>Product</th>
                             <th>Serial No</th>
+                            <th>image</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -208,13 +209,14 @@ $result = mysqli_query($link1, $sql);
 
 
                                 <!-- Status -->
-                                <td><span class="label
+                                <td><span style="border-radius: 50px; padding: 10px" class="label
                                 <?php
                                     if($row['status']=='Pending') echo 'label-warning';
                                     elseif($row['status']=='Approved') echo 'label-success';
                                     else echo 'label-danger'; ?>">
                                         <?= htmlspecialchars($row['status'])
                                         ?>
+                                        <span style="margin-left: 5px;color: black">X</span>
                                     </span>
                                 </td>
 
@@ -223,6 +225,8 @@ $result = mysqli_query($link1, $sql);
                                 <td><?= htmlspecialchars($row['product_code']) ?></td>
                                 <!-- Serial No -->
                                 <td><?= htmlspecialchars($row['serial_no']) ?></td>
+
+                                <td><img src="<?= "../installation_uploads/2025-12/".htmlspecialchars($row['img_url']==''?'693a5bc131810_sheet.jpg':$row['img_url']) ?>" width="50" height="50"/></td>
                                 <td align="center">
                                     <a href="installation_view.php?id=<?= urlencode($row['id']) ?>"
                                        class="btn btn-xs btn-info"

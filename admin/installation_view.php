@@ -95,88 +95,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/bootstrap.min.css">
 
     <style>
-        /* 🔥 Equal height cards */
-        .equal-height {
+        #dragRow {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            gap: 15px;
         }
 
-        .equal-height > [class*='col-'] {
-            display: flex;
+        .draggable-card {
+            cursor: grab;
         }
 
-        .equal-height .panel {
-            flex: 1;
-            width: 100%;
+        .drag-handle {
+            cursor: grab;
+            user-select: none;
         }
 
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.85);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .drag-ghost {
+            opacity: 0.4;
         }
 
-        .loading-box {
-            text-align: center;
-            color: #2c3e50;
-            font-size: 16px;
-            font-weight: 600;
+        .drag-chosen {
+            cursor: grabbing;
         }
-
-        .loading-box i {
-            margin-bottom: 10px;
+        .panel {
+            transition: box-shadow .2s ease;
         }
-
-        /* The Modal (background) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            padding-top: 50px; /* Location of the box */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
-
-        /* Modal Content */
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 50%;
-            height: 50%;
-            margin-top: 20px;
-        }
-
-        /* The Close Button */
-        .close {
-            color: #aaaaaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
+        .panel:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,.12);
         }
     </style>
 
+
     <script type="text/javascript" src="../js/jquery.validate.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var row = document.getElementById("dragRow");
+            if (!row) return;
+
+            new Sortable(row, {
+                animation: 200,
+                direction: 'horizontal',        // 🔒 LEFT ↔ RIGHT ONLY
+                draggable: '.draggable-card',
+                handle: '.drag-handle',         // 🔥 header se drag
+                forceFallback: true,
+                fallbackTolerance: 5
+            });
+
+        });
+    </script>
+
+
 
 </head>
 <body>
@@ -237,14 +208,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- ================= ENGINEER + CUSTOMER ================= -->
-            <div class="row equal-height">
+            <div class="row equal-height" id="dragRow">
 
-                <!-- ENGINEER -->
-                <div class="col-md-6">
+                <!-- ================= ENGINEER ================= -->
+                <div class="col-md-6 draggable-card" data-card="engineer">
                     <div class="panel panel-primary">
-                        <div class="panel-heading">
+
+                        <div class="panel-heading drag-handle">
+                            <i class="fa fa-arrows"></i>
                             <i class="fa fa-user"></i> Engineer Details
                         </div>
+
                         <div class="panel-body">
 
                             <?php
@@ -259,6 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                          class="img-thumbnail"
                                          style="width:120px;height:120px;">
                                 </div>
+
                                 <div class="col-sm-8">
                                     <table class="table table-bordered table-condensed">
                                         <tr><th>User ID</th><td><?= $row['userid'] ?></td></tr>
@@ -279,12 +254,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- CUSTOMER -->
-                <div class="col-md-6">
+                <!-- ================= CUSTOMER ================= -->
+                <div class="col-md-6 draggable-card" data-card="customer">
                     <div class="panel panel-success">
-                        <div class="panel-heading">
+
+                        <div class="panel-heading drag-handle">
+                            <i class="fa fa-arrows"></i>
                             <i class="fa fa-home"></i> Customer Details
                         </div>
+
                         <div class="panel-body">
                             <table class="table table-bordered table-condensed">
                                 <tr><th width="35%">Customer Name</th><td><?= $row['customer_Name'] ?></td></tr>
@@ -304,10 +282,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </tr>
                             </table>
                         </div>
+
                     </div>
                 </div>
 
             </div>
+
 
             <!-- ================= PRODUCT DETAILS ================= -->
             <div class="panel panel-info">
@@ -332,7 +312,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td><?= $row['serial_no'] ?></td>
                             <td><?= $row['dop'] ?></td>
                             <td>
-                        <span class="label
+                        <span style="border-radius: 50px" class="label
                             <?= ($row['status']=='Approved')?'label-success':(($row['status']=='Pending')?'label-warning':'label-danger') ?>">
                             <?= $row['status'] ?>
                         </span>
@@ -354,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <tr>
                                 <th width="25%">Status</th>
                                 <td>
-                        <span class="label
+                        <span style="border-radius: 60px;" class="label
                             <?= ($row['status']=='Approved')?'label-success':'label-danger' ?>">
                             <?= $row['status'] ?>
                         </span>
@@ -479,18 +459,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!--close col-sm-9-->
     </div><!--close row content-->
 </div><!--close container-fluid-->
-<!-- The Modal -->
-<div id="myModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <p id="img" style="text-align: center;"></p>
-    </div>
-</div>
+
+
 <?php
 include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
+
 
 
 </body>

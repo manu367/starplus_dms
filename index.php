@@ -29,12 +29,12 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
         body {
             min-height: 100vh;
             background:
-                    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                    linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
                     url('img/Banner-1.jpg') no-repeat center center / cover;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: "Segoe UI", system-ui, -apple-system;
+            font-family: "Segoe UI", system-ui;
         }
 
         .login-wrapper {
@@ -44,10 +44,20 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
         }
 
         .login-card {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.96);
             border-radius: 18px;
             padding: 35px 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            animation: slideFade 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(35px);
+        }
+
+        @keyframes slideFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-logo {
@@ -77,11 +87,41 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
             height: 48px;
             border-radius: 10px;
             font-size: 15px;
+            padding-right: 45px; /* 👈 eye ke liye space */
+            transition: all 0.2s ease;
         }
 
         .form-control:focus {
             border-color: #4e73df;
-            box-shadow: none;
+            background: #f9fbff;
+            box-shadow: 0 0 0 3px rgba(78,115,223,0.18);
+        }
+
+        /* 🔥 PASSWORD WRAP FIX */
+        .password-wrap {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 63%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-password img {
+            width: 22px;
+            height: 22px;
+            opacity: 0.75;
+            transition: opacity 0.2s ease;
+        }
+
+        .toggle-password:hover img {
+            opacity: 1;
         }
 
         .btn-login {
@@ -93,10 +133,18 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
             font-size: 16px;
             font-weight: 600;
             color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s ease;
         }
 
         .btn-login:hover {
-            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(78,115,223,0.45);
+        }
+
+        .btn-login:active {
+            transform: scale(0.96);
         }
 
         .alert-danger {
@@ -139,12 +187,27 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
 
             <div class="form-group">
                 <label for="userid">USER ID</label>
-                <input type="text" class="form-control" id="userid" name="userid" required placeholder="Enter User ID">
+                <input type="text"
+                       class="form-control"
+                       id="userid"
+                       name="userid"
+                       required
+                       placeholder="Enter User ID">
             </div>
 
-            <div class="form-group">
+            <div class="form-group password-wrap">
                 <label for="pwd">PASSWORD</label>
-                <input type="password" class="form-control" id="pwd" name="pwd" required placeholder="Enter Password">
+                <input type="password"
+                       class="form-control"
+                       id="pwd"
+                       name="pwd"
+                       required
+                       placeholder="Enter Password">
+
+                <!-- 👁️ ICON -->
+                <span class="toggle-password" onclick="togglePassword()">
+                    <img id="eyeIcon" src="./img/show.png" alt="Toggle Password">
+                </span>
             </div>
 
             <button type="submit" id="sbmt" name="sbmt" class="btn btn-login btn-block">
@@ -160,15 +223,18 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
             <?php
             if (isset($_SESSION["logres"]["msg"])) {
                 $color = ($_SESSION["logres"]["status"] == "success") ? "#2e9e2e" : "#e51111";
-                echo '<div class="alert text-center" style="color:' . $color . '; background:#f4f4f4; margin-top:15px; border-radius:10px;">
-                ' . $_SESSION["logres"]["msg"] . '
-                </div>';
+                echo '<div class="alert text-center"
+                        style="color:' . $color . ';
+                        background:#f4f4f4;
+                        margin-top:15px;
+                        border-radius:10px;">
+                        ' . $_SESSION["logres"]["msg"] . '
+                      </div>';
                 unset($_SESSION["logres"]);
             }
             ?>
 
         </form>
-
     </div>
 
     <div class="footer-text">
@@ -178,12 +244,21 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
 </div>
 
 <script>
-    $("#sbmt").on("click", function (event) {
-        var form = $("#login_form")[0];
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
+    function togglePassword() {
+        const pwd = document.getElementById("pwd");
+        const icon = document.getElementById("eyeIcon");
+
+        if (pwd.type === "password") {
+            pwd.type = "text";
+            icon.src = "./img/hide.png"; // 👁️ open
+        } else {
+            pwd.type = "password";
+            icon.src = "./img/show.png"; // 👁️ closed
         }
+    }
+
+    $("#login_form").on("submit", function () {
+        $("#sbmt").html("Authenticating…").prop("disabled", true);
     });
 </script>
 

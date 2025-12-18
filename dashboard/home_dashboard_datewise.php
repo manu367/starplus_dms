@@ -377,6 +377,54 @@ td {
     -moz-border-radius: 5px;
     padding: 5px;
 }
+ /* ===== DASHBOARD CARD POLISH ===== */
+ .card {
+     border-radius: 18px !important;
+     box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+     transition: all 0.25s ease;
+     overflow: hidden;
+ }
+
+ .card:hover {
+     transform: translateY(-6px);
+     box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+ }
+
+ .card-body h3 {
+     font-weight: 600;
+     margin: 0;
+ }
+
+ .card-body h4 {
+     margin-top: 6px;
+     opacity: 0.9;
+ }
+
+ .card i {
+     opacity: 0.85;
+ }
+
+ /* Consistent height + alignment */
+ .card-body {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+ }
+
+ /* Chart containers polish */
+ #top_model,
+ #top_seller,
+ #sale_trend,
+ #po_status_pie,
+ #inv_status_pie,
+ #outstanding,
+ #container {
+     background: #fff;
+     margin-top: 15px;
+     padding: 10px;
+     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+ }
+
  </style>
 <link rel="stylesheet" href="../css/datepicker.css">
 <script src="../js/bootstrap-datepicker.js"></script>
