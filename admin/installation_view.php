@@ -4,11 +4,13 @@
 require_once("../config/config.php");
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    die("Invalid Request");
+    header("Location: installations_register.php?pid=154&hid=FN10&msg=Invalid  value");
+    exit();
 }
 
 $id = intval($_GET['id']); // 🔒 basic security
-$sql = "SELECT ind.*, au.name FROM installation_data ind LEFT JOIN admin_users au ON ind.userid = au.username WHERE ind.id = $id LIMIT 1";
+$sql = "SELECT ind.*, au.name , au.phone as au_phone , au.emailid as au_email FROM installation_data ind LEFT JOIN admin_users au ON ind.userid = au.username WHERE ind.id = $id LIMIT 1";
+//var_dump($sql);exit();
 $res = mysqli_query($link1, $sql);
 $recordFound = true;
 if (mysqli_num_rows($res) == 0) {
@@ -19,27 +21,45 @@ if (mysqli_num_rows($res) == 0) {
 
 ?>
 <?php
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!isset($_POST['actiontaken'])) {
-        die("Action missing");
+        header("Location: installations_register.php?pid=154&hid=FN10&msg=Invalid action value");
+        exit();
+    }
+    // 🔒 Remark validation
+    if (empty($_POST['remark'])) {
+        header("Location: installations_register.php?pid=154&hid=FN10&msg=Invalid remark value");
+        exit();
     }
 
     $actiontaken = $_POST['actiontaken'];
+    $remark      = trim($_POST['remark']);
 
-    // 🔒 Validate action
-//    var_dump($actiontaken);exit();
+    //  Validate action value
     if ($actiontaken !== "1" && $actiontaken !== "2") {
-        die("Invalid action value");
+        header("Location: installations_register.php?pid=154&hid=FN10&msg=Invalid action value");
+        exit();
     }
 
-    // 🎯 Map status
+    //  Minimum remark length
+    if (strlen($remark) < 5) {
+        header("Location: installations_register.php?pid=154&hid=FN10&msg=Remark is too short");
+        exit();
+    }
+
+
     $action = ($actiontaken === "1") ? "Approved" : "Rejected";
+    $remark = mysqli_real_escape_string($link1, $remark);
+    $approveBy = $_SESSION['userid'] ?? 'system';
 
     // 🔥 UPDATE QUERY
     $sqlupdate = "
         UPDATE installation_data 
-        SET status = '$action' 
+        SET status = '$action' ,
+            remark = '$remark',
+            approve_by = '$approveBy'
         WHERE id = $id 
         LIMIT 1
     ";
@@ -55,7 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } else {
-        die("Update failed: " . mysqli_error($link1));
+        header("Location: installations_register.php?pid=154&hid=FN10&msg=No Record found");
+        exit();
     }
 }
 ?>
@@ -74,6 +95,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../css/bootstrap.min.css">
 
     <style>
+        /* 🔥 Equal height cards */
+        .equal-height {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .equal-height > [class*='col-'] {
+            display: flex;
+        }
+
+        .equal-height .panel {
+            flex: 1;
+            width: 100%;
+        }
+
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -141,6 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 
     <script type="text/javascript" src="../js/jquery.validate.js"></script>
+
 </head>
 <body>
 
@@ -185,93 +222,260 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <?php return; endif; ?>
         <div class="col-sm-9">
-            <h3 class="text-center">
-                <i class="fa fa-check-circle"></i> Installation Approval
-            </h3>
 
-            <h5 class="text-center">Document No: <?= htmlspecialchars($row['document_no']) ?></h5>
-            <p class="text-center">
-                Entry: <?= $row['entry_date'] ?> <?= $row['entry_time'] ?>
-            </p>
-
-            <!-- ================= ENGINEER INFO ================= -->
-            <div class="panel panel-info">
-                <div class="panel-heading">Engineer / Customer Info</div>
-                <div class="panel-body">
-                    <table class="table table-bordered">
-                        <tr><td>Engineer</td><td><?= $row['name'] ?></td></tr>
-                        <tr><td>Customer</td><td><?= $row['customer_Name'] ?></td></tr>
-                        <tr><td>Mobile</td><td><?= $row['mobile_no'] ?></td></tr>
-                        <tr><td>Email</td><td><?= $row['email'] ?></td></tr>
-                        <tr>
-                            <td>Address</td>
-                            <td>
-                                <?= $row['address'] ?>,
-                                <?= $row['city'] ?>,
-                                <?= $row['state'] ?> - <?= $row['pincode'] ?>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+            <!-- ================= PAGE HEADER ================= -->
+            <div class="text-center" style="margin-bottom:20px;">
+                <h3 style="margin-bottom:5px;">
+                    <i class="fa fa-check-circle text-success"></i> Installation Approval
+                </h3>
+                <span class="label label-default">
+            Document No: <?= htmlspecialchars($row['document_no']) ?>
+        </span>
+                <p style="margin-top:8px;color:#777;">
+                    Entry on <?= $row['entry_date'] ?> at <?= $row['entry_time'] ?>
+                </p>
             </div>
 
-            <!-- ================= INSTALLATION INFO ================= -->
-            <div class="panel panel-info">
-                <div class="panel-heading">Installation Details</div>
-                <div class="panel-body">
-                    <table class="table table-bordered">
-                        <tr><td>Product Code</td><td><?= $row['product_code'] ?></td></tr>
-                        <tr><td>Serial No</td><td><?= $row['serial_no'] ?></td></tr>
-                        <tr><td>Invoice No</td><td><?= $row['invoice_no'] ?></td></tr>
-                        <tr><td>Installation Date</td><td><?= $row['installation_date'] ?></td></tr>
-                        <tr>
-                            <td>Status</td>
-                            <td><strong><?= $row['status'] ?></strong></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
+            <!-- ================= ENGINEER + CUSTOMER ================= -->
+            <div class="row equal-height">
 
-            <!-- ================= ACTION ================= -->
-            <?php if ($row['status'] === 'Pending'): ?>
-                <form method="post" id="approvalForm" action="">
-                    <div class="panel panel-warning">
-                        <div class="panel-heading">Approval Action</div>
+                <!-- ENGINEER -->
+                <div class="col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <i class="fa fa-user"></i> Engineer Details
+                        </div>
                         <div class="panel-body">
-                            <table class="table">
+
+                            <?php
+                            $profileImg = (!empty($row['profile_img_path']))
+                                    ? $row['profile_img_path']
+                                    : "../img/user.png";
+                            ?>
+
+                            <div class="row">
+                                <div class="col-sm-4 text-center">
+                                    <img src="<?= $profileImg ?>"
+                                         class="img-thumbnail"
+                                         style="width:120px;height:120px;">
+                                </div>
+                                <div class="col-sm-8">
+                                    <table class="table table-bordered table-condensed">
+                                        <tr><th>User ID</th><td><?= $row['userid'] ?></td></tr>
+                                        <tr><th>Name</th><td><?= $row['name'] ?></td></tr>
+                                        <tr><th>Phone</th><td><?= $row['au_phone']==''?'+91XXXXXXXXXX':$row['au_phone'] ?></td></tr>
+                                        <tr><th>Email</th><td><?= $row['au_email']==''?'xxxx@gmail.com':$row['au_email'] ?></td></tr>
+                                        <tr><th>City</th><td><?= $row['city'] ?></td></tr>
+                                        <tr><th>State</th><td><?= $row['state'] ?></td></tr>
+                                        <tr>
+                                            <th>Address</th>
+                                            <td><?= $row['address'] ?> - <?= $row['pincode'] ?></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER -->
+                <div class="col-md-6">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <i class="fa fa-home"></i> Customer Details
+                        </div>
+                        <div class="panel-body">
+                            <table class="table table-bordered table-condensed">
+                                <tr><th width="35%">Customer Name</th><td><?= $row['customer_Name'] ?></td></tr>
+                                <tr><th>Mobile</th><td><?= $row['mobile_no'] ?></td></tr>
+                                <tr><th>Email</th><td><?= $row['email'] ?></td></tr>
                                 <tr>
-                                    <td width="40%">Action <span class="text-danger">*</span></td>
+                                    <th>Address</th>
                                     <td>
-                                        <select name="actiontaken" class="form-control" required>
-                                            <option value="0">-- Select Action --</option>
-                                            <option value="1">Approved</option>
-                                            <option value="2">Rejected</option>
-                                        </select>
+                                        <?= $row['address'] ?>,
+                                        <?= $row['city'] ?>,
+                                        <?= $row['state'] ?> - <?= $row['pincode'] ?>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2" class="text-center">
-                                        <button type="submit" class="btn btn-success" id="submitBtn">
-                                            <i class="fa fa-check"></i> Update
-                                        </button>
-                                        <a href="installations_register.php?pid=154&hid=FN10"
-                                           class="btn btn-default">
-                                            Back
-                                        </a>
-                                    </td>
+                                    <th>Installation Date</th>
+                                    <td><?= $row['installation_date'] ?></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
-                </form>
-            <?php else: ?>
-                <a href="installations_register.php?pid=154&hid=FN10"
-                   class="btn btn-primary">
-                    Back
-                </a>
+                </div>
+
+            </div>
+
+            <!-- ================= PRODUCT DETAILS ================= -->
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-cube"></i> Product Details
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Invoice No</th>
+                            <th>Product Code</th>
+                            <th>Serial No</th>
+                            <th>Date of Purchase</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td><?= $row['invoice_no'] ?></td>
+                            <td><?= $row['product_code'] ?></td>
+                            <td><?= $row['serial_no'] ?></td>
+                            <td><?= $row['dop'] ?></td>
+                            <td>
+                        <span class="label
+                            <?= ($row['status']=='Approved')?'label-success':(($row['status']=='Pending')?'label-warning':'label-danger') ?>">
+                            <?= $row['status'] ?>
+                        </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <?php if ($row['status'] !== 'Pending'): ?>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-comment"></i> Approval Remark
+                    </div>
+                    <div class="panel-body">
+
+                        <table class="table table-bordered table-condensed">
+                            <tr>
+                                <th width="25%">Status</th>
+                                <td>
+                        <span class="label
+                            <?= ($row['status']=='Approved')?'label-success':'label-danger' ?>">
+                            <?= $row['status'] ?>
+                        </span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Remark</th>
+                                <td style="white-space:pre-line;">
+                                    <?= !empty($row['remark'])
+                                            ? htmlspecialchars($row['remark'])
+                                            : '<span class="text-muted">No remark available</span>' ?>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Approved By</th>
+                                <td><?= htmlspecialchars($row['approve_by']==''?'System':$row['approve_by']) ?></td>
+                            </tr>
+                        </table>
+
+                    </div>
+                </div>
             <?php endif; ?>
 
+
+            <!-- ================= APPROVAL ACTION ================= -->
+            <?php if ($row['status'] === 'Pending'): ?>
+                <form method="post" onsubmit="return formSubmitValidate()">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <i class="fa fa-gavel"></i> Approval Action
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+
+                                <!-- 🔹 LEFT : REMARK -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>
+                                            Remark <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea name="remark"
+                                                  class="form-control"
+                                                  rows="4"
+                                                  id="remark"
+                                                  placeholder="Enter approval / rejection remark..."
+                                                  required></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- 🔹 RIGHT : ACTION -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>
+                                            Select Action <span class="text-danger">*</span>
+                                        </label>
+                                        <select name="actiontaken"
+                                                id="actiontaken"
+                                                class="form-control"
+                                                required>
+                                            <option value="0">-- Select Action --</option>
+                                            <option value="1">Approve</option>
+                                            <option value="2">Reject</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <hr>
+
+                            <!-- 🔘 BUTTONS -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-success" >
+                                    <i class="fa fa-check"></i> Update Status
+                                </button>
+
+                                <a href="installations_register.php?pid=154&hid=FN10"
+                                   class="btn btn-default">
+                                    Back
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+                <script>
+                    function formSubmitValidate(){
+
+                        let remark = document.getElementById("remark").value;
+                        let actiontaken = document.getElementById("actiontaken").value;
+
+                        if(actiontaken == "0"){
+                            alert("Please select an option");
+                            return false; // ❌ form submit stop
+                        }
+
+                        if(remark.trim().length < 5){
+                            alert("Please enter valid remark (minimam 5 chars)");
+                            return false; // ❌ form submit stop
+                        }
+
+                        // ✅ sab kuch sahi
+                        return true; // form submit allowed
+                    }
+                </script>
+
+            <?php else: ?>
+                <div class="text-center">
+                    <a href="installations_register.php?pid=154&hid=FN10"
+                       class="btn btn-primary">
+                        Back to List
+                    </a>
+                </div>
+            <?php endif; ?>
+
+
         </div>
+
         <!--close col-sm-9-->
     </div><!--close row content-->
 </div><!--close container-fluid-->
@@ -287,34 +491,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
-<script>
-    // Get the modal
-    var modal = document.getElementById('myModal');
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
 
-    // When the user clicks the button, open the modal
-    function getThisValue(i) {
-        var img = $("#image"+i).attr('src');
-        $("#img").html('<img src="'+img+'" width="550px"/>');
-        modal.style.display = "block";
-    }
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    //        $(document).on('click',"#myBtn1",function(){
-    //
-    //        });
-</script>
 </body>
 </html>

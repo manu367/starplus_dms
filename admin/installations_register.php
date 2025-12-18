@@ -61,16 +61,19 @@ $result = mysqli_query($link1, $sql);
         $(document).ready(function () {
             $('#myTable').dataTable();
             ////// from date
+            const today = new Date();
             $('#fdate').datepicker({
                 format: "yyyy-mm-dd",
                 todayHighlight: true,
-                autoclose: true
+                autoclose: true,
+                endDate: today
             });
             /////// to date
             $('#tdate').datepicker({
                 format: "yyyy-mm-dd",
                 todayHighlight: true,
-                autoclose: true
+                autoclose: true,
+                endDate: today
             });
         });
     </script>
@@ -165,18 +168,26 @@ $result = mysqli_query($link1, $sql);
                     </div>
                 </div><!--close form group-->
             </form>
+            <a href="../excelReports/installation_export_excel.php?fdate=<?= urlencode($_REQUEST['fdate'] ?? '') ?>&tdate=<?= urlencode($_REQUEST['tdate'] ?? '') ?>&user_id=<?= urlencode($_REQUEST['user_id'] ?? '') ?>&status=<?= urlencode($_REQUEST['status'] ?? '') ?>"
+               class="btn btn-success btn-sm"
+               style="margin-bottom:10px;">
+                <i class="fa fa-file-excel-o"></i> Download Sheet
+            </a>
+
+
             <form class="form-horizontal" role="form">
                 <div class="form-group" id="page-wrap" style="margin-left:10px;"><br /><br />
                     <table  width="98%" id="myTable" class="table-striped table-bordered table-hover" align="center">
                         <thead>
                         <tr class="<?=$tableheadcolor?>">
                             <th>Sr No</th>
-                            <th>Name</th>
-                            <th>User ID</th>
+                            <th>Technican ID</th>
+                            <th>Technican Name</th>
                             <th>Status</th>
                             <th>Installation Date</th>
+                            <th>Product</th>
                             <th>Serial No</th>
-                            <th>Actio</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -190,27 +201,26 @@ $result = mysqli_query($link1, $sql);
                                 <!-- Sr No -->
                                 <td><?= $sno ?></td>
 
+                                <!-- User ID -->
+                                <td><?= htmlspecialchars($row['userid']) ?></td>
                                 <!-- Name -->
                                 <td><?= htmlspecialchars($row['name']) ?></td>
 
-                                <!-- User ID -->
-                                <td><?= htmlspecialchars($row['userid']) ?></td>
 
                                 <!-- Status -->
-                                <td>
-        <span class="label
-            <?php
-        if($row['status']=='Pending') echo 'label-warning';
-        elseif($row['status']=='Approved') echo 'label-success';
-        else echo 'label-danger';
-        ?>">
-            <?= htmlspecialchars($row['status']) ?>
-        </span>
+                                <td><span class="label
+                                <?php
+                                    if($row['status']=='Pending') echo 'label-warning';
+                                    elseif($row['status']=='Approved') echo 'label-success';
+                                    else echo 'label-danger'; ?>">
+                                        <?= htmlspecialchars($row['status'])
+                                        ?>
+                                    </span>
                                 </td>
 
                                 <!-- Installation Date -->
                                 <td><?= htmlspecialchars($row['installation_date']) ?></td>
-
+                                <td><?= htmlspecialchars($row['product_code']) ?></td>
                                 <!-- Serial No -->
                                 <td><?= htmlspecialchars($row['serial_no']) ?></td>
                                 <td align="center">
