@@ -100,6 +100,9 @@
         <link rel="stylesheet" href="../css/bootstrap.min.css">
     
         <style>
+            :root{
+                user-select: none;
+            }
             #dragRow {
                 display: flex;
                 flex-wrap: nowrap;
