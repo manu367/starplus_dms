@@ -187,7 +187,8 @@ $result = mysqli_query($link1, $sql);
                             <th>Installation Date</th>
                             <th>Product</th>
                             <th>Serial No</th>
-                            <th>image</th>
+                            <th>Customer Name</th>
+                            <th>Customer Mobiel</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -225,8 +226,9 @@ $result = mysqli_query($link1, $sql);
                                 <td><?= htmlspecialchars($row['product_code']) ?></td>
                                 <!-- Serial No -->
                                 <td><?= htmlspecialchars($row['serial_no']) ?></td>
+                                <td><?= htmlspecialchars($row['customer_Name']) ?></td>
+                                <td><?= htmlspecialchars($row['mobile_no']) ?></td>
 
-                                <td><img src="<?= "../installation_uploads/2025-12/".htmlspecialchars($row['img_url']==''?'693a5bc131810_sheet.jpg':$row['img_url']) ?>" width="50" height="50"/></td>
                                 <td align="center">
                                     <a href="installation_view.php?id=<?= urlencode($row['id']) ?>"
                                        class="btn btn-xs btn-info"
@@ -245,11 +247,57 @@ $result = mysqli_query($link1, $sql);
 
     </div>
 </div>
+
+<!-- IMAGE PREVIEW MODAL -->
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Installation Image</h4>
+            </div>
+
+            <div class="modal-body text-center">
+                <img id="showImage"
+                     src=""
+                     class="img-responsive center-block"
+                     style="max-height:80vh;"
+                     alt="Installation Image">
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function openImageModel(img) {
+        var basePath = "";
+        $("#showImage").attr("src",img);
+        $("#imageModal").modal("show");
+    }
+</script>
+
+
 <?php
 include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
 </body>
 
+<script>
+    const data={
+        category:"IT",
+        status:"Pending",
+        CreateAT:Date.now(),
+        course:[{orde:`1`},{order:`2`}]
+    };
+    if(Object.keys(data).length == 0){
+        console.log("object is empty");
+    }
+    console.log(Object.keys(data));
+    console.log(Object.values(data));
+    console.log(Object.entries(data));
+
+</script>
 
 </html>

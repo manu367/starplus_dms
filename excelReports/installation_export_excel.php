@@ -32,9 +32,16 @@ if (!empty($_REQUEST['status'])) {
     $status = $_REQUEST['status'];
     $where .= " AND ind.status = '$status'";
 }
-//var_dump($_REQUEST['status']);exit();
+
 $sql = "
-SELECT ind.*, au.*, ind.status as ind_status
+SELECT 
+    ind.*,
+    au.name AS tech_name,
+    au.phone AS tech_mobile,
+    au.username AS tech_id,
+    ind.mobile_no AS cust_mobile,
+    ind.email AS cust_email,
+    ind.status AS ind_status
 FROM installation_data ind
 LEFT JOIN admin_users au ON ind.userid = au.username
 $where
@@ -44,21 +51,31 @@ ORDER BY ind.installation_date DESC
 $result = mysqli_query($link1, $sql);
 ?>
 
-<table  width="98%" id="myTable" class="table-striped table-bordered table-hover" align="center">
+<table width="100%" border="1">
     <tr>
         <th>Sr No</th>
-        <th>Technican ID</th>
-        <th>Technican Name</th>
-        <th>Status</th>
+
+        <th>Technician ID</th>
+        <th>Technician Name</th>
+        <th>Technician Mobile</th>
+
+        <th>Customer Name</th>
+        <th>Customer Mobile</th>
+        <th>Customer Email</th>
+        <th>Customer Address</th>
+        <th>Customer City</th>
+        <th>Customer State</th>
+
+        <th>Approved By</th>
+        <th>Approved Date</th>
+        <th>Approved Time</th>
+
         <th>Installation Date</th>
         <th>Product</th>
         <th>Serial No</th>
-        <th>Customer Name</th>
-        <th>Cus. Mobile Number</th>
-        <th>Cus. Email</th>
-        <th>Cus. Address</th>
-        <th>Cus. City</th>
-        <th>Cus. State</th>
+        <th>Document Number</th>
+        <th>Invoice</th>
+        <th>Status</th>
     </tr>
 
     <?php
@@ -68,18 +85,28 @@ $result = mysqli_query($link1, $sql);
         ?>
         <tr>
             <td><?= $sno ?></td>
-            <td><?= $row['userid'] ?></td>
-            <td><?= $row['name'] ?></td>
-            <td><?= $row['ind_status'] ?></td>
-            <td><?= $row['installation_date'] ?></td>
-            <td><?= $row['product_code'] ?></td>
-            <td><?= $row['serial_no'] ?></td>
+
+            <td><?= $row['tech_id'] ?></td>
+            <td><?= $row['tech_name'] ?></td>
+            <td><?= $row['tech_mobile'] ?></td>
+
             <td><?= $row['customer_Name'] ?></td>
-            <td><?= $row['mobile_no'] ?></td>
-            <td><?= $row['email'] ?></td>
+            <td><?= $row['cust_mobile'] ?></td>
+            <td><?= $row['cust_email'] ?></td>
             <td><?= $row['address'] ?></td>
             <td><?= $row['city'] ?></td>
             <td><?= $row['state'] ?></td>
+
+            <td><?= $row['approved_by'] ?? '-' ?></td>
+            <td><?= $row['approved_date'] ?? '-' ?></td>
+            <td><?= $row['approved_time'] ?? '-' ?></td>
+
+            <td><?= $row['installation_date'] ?></td>
+            <td><?= $row['product_code'] ?></td>
+            <td><?= $row['serial_no'] ?></td>
+            <td><?= $row['document_no'] ?? '-' ?></td>
+            <td><?= $row['invoice_no'] ?? '-' ?></td>
+            <td><?= $row['ind_status'] ?></td>
         </tr>
     <?php } ?>
 </table>
