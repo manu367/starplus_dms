@@ -598,5 +598,21 @@ include("../includes/connection_close.php");
     }
 </script>
 
+<script>
+    const data=[
+        {
+            name:"employee details",
+            uuid:"STUSR003"
+        },{
+        name:"employee details",
+            uuid:"STUSR004"
+        }
+    ]
+    //console.log(data);
+    data.forEach((c,i)=>{
+        console.log(c);
+    });
+</script>
+
 </body>
 </html>
