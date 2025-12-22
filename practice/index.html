@@ -2,15 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dropdown Fix</title>
+    <title>Offcanvas</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body>
-<div class="relative">
-    <button class="relative bg-red-200 border rounded-full mx-5 mt-5 p-2">
-        <span>click me</span>
-        <span class="absolute top- right-0">😊</span>
-    </button>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- Button -->
+<button onclick="openCanvas()"
+        class="m-6 px-4 py-2 bg-blue-600 text-white rounded">
+    Open Offcanvas
+</button>
+
+<!-- Overlay -->
+<div id="overlay"
+     class="fixed inset-0 bg-black/50 opacity-0 pointer-events-none
+            transition-opacity duration-300">
+
+    <!-- Offcanvas -->
+    <div id="offcanvas"
+         class="absolute top-0 left-0 h-full w-72 bg-white shadow-xl
+                -translate-x-full transition-transform duration-300">
+
+        <!-- Header -->
+        <div class="p-4 border-b font-semibold text-lg flex justify-between">
+            Menu
+            <button onclick="closeCanvas()">✕</button>
+        </div>
+
+        <!-- Content -->
+        <div class="p-4 text-gray-700">
+            <p>Home</p>
+            <p>About</p>
+            <p>Services</p>
+            <p>Contact</p>
+        </div>
+    </div>
 </div>
+
+<script>
+    const overlay = document.getElementById("overlay");
+    const offcanvas = document.getElementById("offcanvas");
+
+    function openCanvas() {
+        overlay.classList.remove("opacity-0", "pointer-events-none");
+        offcanvas.classList.remove("-translate-x-full");
+    }
+
+    function closeCanvas() {
+        offcanvas.classList.add("-translate-x-full");
+        overlay.classList.add("opacity-0");
+
+        setTimeout(() => {
+            overlay.classList.add("pointer-events-none");
+        }, 300);
+    }
+</script>
+
 </body>
 </html>

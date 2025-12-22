@@ -8,25 +8,21 @@ if (!empty($_REQUEST['fdate'])) {
     $fromdate = $_REQUEST['fdate'];
     $where .= " AND ind.installation_date >= '$fromdate'";
 }
-
 // 🔹 To Date
 if (!empty($_REQUEST['tdate'])) {
     $todate = $_REQUEST['tdate'];
     $where .= " AND ind.installation_date <= '$todate'";
 }
-
 // 🔹 User ID
 if (!empty($_REQUEST['user_id'])) {
     $userid = $_REQUEST['user_id'];
     $where .= " AND ind.userid = '$userid'";
 }
-
 // 🔹 Status
 if (!empty($_REQUEST['status'])) {
     $status = $_REQUEST['status'];
     $where .= " AND ind.status = '$status'";
 }
-
 // ✅ USE $where HERE
 $sql = "
 SELECT ind.*, au.name
@@ -37,7 +33,6 @@ $where
 ORDER BY ind.installation_date DESC
 ";
 $result = mysqli_query($link1, $sql);
-
 ?>
 
 
@@ -285,19 +280,8 @@ include("../includes/connection_close.php");
 </body>
 
 <script>
-    const data={
-        category:"IT",
-        status:"Pending",
-        CreateAT:Date.now(),
-        course:[{orde:`1`},{order:`2`}]
-    };
-    if(Object.keys(data).length == 0){
-        console.log("object is empty");
-    }
-    console.log(Object.keys(data));
-    console.log(Object.values(data));
-    console.log(Object.entries(data));
-
+    console.log(a);
+    let a=10;
 </script>
 
 </html>

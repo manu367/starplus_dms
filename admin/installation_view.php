@@ -1,4 +1,4 @@
-    <?php
+<?php
     
     //tadaApprovalPage.php?id=RVhQLzIwMjUwOTAzL1NVVVNSMDYxLzAwMDE=&pid=51&hid=FN10
     require_once("../config/config.php");
@@ -19,9 +19,9 @@
         $row = mysqli_fetch_assoc($res);
     }
     
-    ?>
+?>
 
-    <?php
+ <?php
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
@@ -86,9 +86,9 @@
     }
     ?>
     
-    <!DOCTYPE html>
-    <html>
-    <head>
+<!DOCTYPE html>
+<html>
+<head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title><?=siteTitle?></title>
@@ -131,7 +131,21 @@
             .panel:hover {
                 box-shadow: 0 8px 20px rgba(0,0,0,.12);
             }
-        </style>
+            .img-thumb{
+                 width: 200px;
+                 height: 200px;
+                 object-fit: scale-down;
+                 cursor: pointer;
+                 border-radius: 4px;
+                 border: 1px solid #ddd;
+                 transition: transform .2s ease;
+             }
+            .img-thumb:hover{
+                transform: scale(1.05);
+            }
+
+
+    </style>
     
     
         <script type="text/javascript" src="../js/jquery.validate.js"></script>
@@ -217,16 +231,14 @@
     
                 <!-- ================= ENGINEER + CUSTOMER ================= -->
                 <div class="row equal-height" id="dragRow">
-    
+
                     <!-- ================= ENGINEER ================= -->
                     <div class="col-md-6 draggable-card" data-card="engineer">
                         <div class="panel panel-primary">
-    
                             <div class="panel-heading drag-handle">
                                 <i class="fa fa-arrows"></i>
                                 <i class="fa fa-user"></i> Engineer Details
                             </div>
-    
                             <div class="panel-body">
     
                                 <?php
@@ -261,16 +273,13 @@
                             </div>
                         </div>
                     </div>
-    
                     <!-- ================= CUSTOMER ================= -->
                     <div class="col-md-6 draggable-card" data-card="customer">
                         <div class="panel panel-success">
-    
                             <div class="panel-heading drag-handle">
                                 <i class="fa fa-arrows"></i>
                                 <i class="fa fa-home"></i> Customer Details
                             </div>
-    
                             <div class="panel-body">
                                 <table class="table table-bordered table-condensed">
                                     <tr><th width="35%">Customer Name</th><td><?= $row['customer_Name'] ?></td></tr>
@@ -290,14 +299,10 @@
                                     </tr>
                                 </table>
                             </div>
-    
                         </div>
                     </div>
-    
                 </div>
-    
-    
-                <!-- ================= PRODUCT DETAILS ================= -->
+                <!-- ================ PRODUCT DETAILS ================= -->
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <i class="fa fa-cube"></i> Product Details
@@ -330,7 +335,6 @@
                         </table>
                     </div>
                 </div>
-
 <!--                start image section-->
                 <div class="row">
                     <div class="col-md-8">
@@ -343,78 +347,60 @@
                                 <table class="table table-bordered table-condensed text-center">
                                     <thead>
                                     <tr>
-                                        <th width="40%">Type</th>
-                                        <th>Image</th>
+                                        <th width="40%" class="text-center align-middle">Product</th>
+                                        <th class="text-center align-middle">Installation</th>
+                                        <th class="text-center align-middle">Sheet</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-
-                                    <!-- PRODUCT IMAGE -->
                                     <tr>
-                                        <td><strong>Product</strong></td>
+<!--                                        <td class="text-center align-middle">-->
+<!--                                            <strong>Images</strong>-->
+<!--                                        </td>-->
+
+                                        <!-- PRODUCT -->
                                         <td>
                                             <?php if (!empty($row['img_product'])): ?>
                                                 <img
                                                         src="../installation_uploads/2025-12/<?= htmlspecialchars($row['img_product']) ?>"
-                                                        width="100"
-                                                        height="100"
-                                                        class="img-thumbnail"
-                                                        style="object-fit:cover;cursor:pointer;"
+                                                        class="img-thumb"
                                                         onerror="handleImageError(this)"
                                                         onclick="openImageModal(this.src)">
                                             <?php else: ?>
-                                                <span class="text-muted">No image found</span>
+                                                <span class="text-muted">N/A</span>
                                             <?php endif; ?>
                                         </td>
-                                    </tr>
-
-                                    <!-- INSTALLATION IMAGE -->
-                                    <tr>
-                                        <td><strong>Installation</strong></td>
+                                        <!-- INSTALLATION -->
                                         <td>
                                             <?php if (!empty($row['img_installation'])): ?>
                                                 <img
                                                         src="../installation_uploads/2025-12/<?= htmlspecialchars($row['img_installation']) ?>"
-                                                        width="100"
-                                                        height="100"
-                                                        class="img-thumbnail"
-                                                        style="object-fit:cover;cursor:pointer;"
+                                                        class="img-thumb"
                                                         onerror="handleImageError(this)"
                                                         onclick="openImageModal(this.src)">
                                             <?php else: ?>
-                                                <span class="text-muted">No image found</span>
+                                                <span class="text-muted">N/A</span>
                                             <?php endif; ?>
                                         </td>
-                                    </tr>
-
-                                    <!-- SHEET IMAGE -->
-                                    <tr>
-                                        <td><strong>Sheet</strong></td>
+                                        <!-- SHEET -->
                                         <td>
                                             <?php if (!empty($row['img_sheet'])): ?>
                                                 <img
                                                         src="../installation_uploads/2025-12/<?= htmlspecialchars($row['img_sheet']) ?>"
-                                                        width="100"
-                                                        height="100"
-                                                        class="img-thumbnail"
-                                                        style="object-fit:cover;cursor:pointer;"
+                                                        class="img-thumb"
                                                         onerror="handleImageError(this)"
                                                         onclick="openImageModal(this.src)">
                                             <?php else: ?>
-                                                <span class="text-muted" style="color: red;">No image found</span>
+                                                <span class="text-danger">N/A</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
-
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
-
                 <!--                end image-->
                 <?php if ($row['status'] !== 'Pending'): ?>
                     <div class="panel panel-default">
@@ -452,8 +438,6 @@
                         </div>
                     </div>
                 <?php endif; ?>
-    
-    
                 <!-- ================= APPROVAL ACTION ================= -->
                 <?php if ($row['status'] === 'Pending'): ?>
                     <form method="post" onsubmit="return formSubmitValidate()">
@@ -464,22 +448,7 @@
     
                             <div class="panel-body">
                                 <div class="row">
-    
-                                    <!-- 🔹 LEFT : REMARK -->
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label>
-                                                Remark <span class="text-danger">*</span>
-                                            </label>
-                                            <textarea name="remark"
-                                                      class="form-control"
-                                                      rows="4"
-                                                      id="remark"
-                                                      placeholder="Enter approval / rejection remark..."
-                                                      required></textarea>
-                                        </div>
-                                    </div>
-    
+
                                     <!-- 🔹 RIGHT : ACTION -->
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -494,6 +463,20 @@
                                                 <option value="1">Approve</option>
                                                 <option value="2">Reject</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <!-- 🔹 LEFT : REMARK -->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>
+                                                Remark <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea name="remark"
+                                                      class="form-control"
+                                                      rows="4"
+                                                      id="remark"
+                                                      placeholder="Enter approval / rejection remark..."
+                                                      required></textarea>
                                         </div>
                                     </div>
     
@@ -521,22 +504,18 @@
     
                             let remark = document.getElementById("remark").value;
                             let actiontaken = document.getElementById("actiontaken").value;
-    
                             if(actiontaken == "0"){
                                 alert("Please select an option");
                                 return false; // ❌ form submit stop
                             }
-    
                             if(remark.trim().length < 5){
                                 alert("Please enter valid remark (minimam 5 chars)");
                                 return false; // ❌ form submit stop
                             }
-    
                             // ✅ sab kuch sahi
                             return true; // form submit allowed
                         }
                     </script>
-    
                 <?php else: ?>
                     <div class="text-center">
                         <a href="installations_register.php?pid=154&hid=FN10"
@@ -545,8 +524,6 @@
                         </a>
                     </div>
                 <?php endif; ?>
-    
-    
             </div>
     
             <!--close col-sm-9-->
