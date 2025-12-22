@@ -97,7 +97,7 @@ $result = mysqli_query($link1, $sql);
             <td><?= $row['city'] ?></td>
             <td><?= $row['state'] ?></td>
 
-            <td><?= $row['approved_by'] ?? '-' ?></td>
+            <td><?= $row['approve_by'] ?? '-' ?></td>
             <td><?= $row['approved_date'] ?? '-' ?></td>
             <td><?= $row['approved_time'] ?? '-' ?></td>
 
