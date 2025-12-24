@@ -78,6 +78,29 @@ $result = mysqli_query($link1, $sql);
     <title>
         <?=siteTitle?>
     </title>
+    <style>
+        .label-draft{
+            background: linear-gradient(120deg, #f80a2d, rgb(85, 179, 8), #096ef3);
+            background-size: 300% 300%;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            animation: draftGlow 4s ease-in-out infinite;
+
+        }
+
+        /* smooth breathing gradient */
+        @keyframes draftGlow{
+            0%   { background-position: 0% 50%; }
+            25%  { background-position:100% 50%;}
+            50% { background-position:0% 50%;}
+            75% { background-position:100% 50%;}
+            100% { background-position:0% 50%;}
+        }
+
+
+    </style>
 </head>
 
 <body>
@@ -150,9 +173,17 @@ $result = mysqli_query($link1, $sql);
                         <div class="col-md-4">
                             <select name='status' id="status" class='form-control'>
                                 <option value=''>--Select Option--</option>
-                                <option value="Pending">Pending</option>
-                                <option value="Approved">Approved</option>
-                                <option value="Rejected">Rejected</option>
+                                <?php
+                                $sql="SELECT * FROM status_request";
+                                $res = mysqli_query($link1,$sql);
+                                while($row = mysqli_fetch_array($res)){
+                                    ?>
+                                    <option value="<?=$row['name']?>">
+                                        <?=$row['name']?>
+                                    </option>
+                                    <?php
+                                }
+                                ?>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -205,16 +236,18 @@ $result = mysqli_query($link1, $sql);
 
 
                                 <!-- Status -->
-                                <td><span style="border-radius: 50px; padding: 10px" class="label
-                                <?php
+                                <td>
+                                    <span class="label
+                                    <?php
                                     if($row['status']=='Pending') echo 'label-warning';
                                     elseif($row['status']=='Approved') echo 'label-success';
+                                    elseif($row['status']=='Draft') echo 'label-draft';
+                                    elseif($row['status']=='Cancelled') echo 'label-danger';
                                     else echo 'label-danger'; ?>">
-                                        <?= htmlspecialchars($row['status'])
-                                        ?>
-                                        <span style="margin-left: 5px;color: black">X</span>
+                                        <?= htmlspecialchars($row['status']) ?>
                                     </span>
                                 </td>
+
 
                                 <!-- Installation Date -->
                                 <td><?= htmlspecialchars($row['installation_date']) ?></td>
@@ -279,9 +312,5 @@ include("../includes/connection_close.php");
 ?>
 </body>
 
-<script>
-    console.log(a);
-    let a=10;
-</script>
 
 </html>

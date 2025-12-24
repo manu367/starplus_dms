@@ -31,6 +31,37 @@ if(!access_check_v3($link1, $fun_id, $_SESSION["userid"], $_SESSION["utype"])){e
     });
  </script>
  <script type="text/javascript" src="../js/jquery.validate.js"></script>
+<!--    Auth : Updated By Many Pathak-->
+ <script>
+        $(document).ready(function () {
+
+            $("#serial_no").keyup(function () {
+                let value = $(this).val().trim();
+
+                if (value.length < 1) {
+                    $("#serial_suggest_box").hide();
+                    return;
+                }
+
+                $.ajax({
+                    url: "../pagination/ajax_serial_suggest.php",
+                    method: "POST",
+                    data: { keyword: value },
+                    success: function (data) {
+                        $("#serial_suggest_box").html(data).show();
+                    }
+                });
+            });
+
+            // click suggestion
+            $(document).on("click", ".serial-item", function () {
+                $("#serial_no").val($(this).text());
+                $("#serial_suggest_box").hide();
+            });
+
+        });
+    </script>
+
 </head>
 <body>
 <div class="container-fluid">
@@ -45,7 +76,13 @@ if(!access_check_v3($link1, $fun_id, $_SESSION["userid"], $_SESSION["utype"])){e
           <div class="form-group">
             <div class="col-md-10"><label class="col-md-4 control-label">Enter Serial Number<span class="red_small">*</span></label>
               <div class="col-md-6">
-                <input type="search" class="form-control alphanumeric required" placeholder=""  name="serial_no" value="<?=$_REQUEST["serial_no"]?>">
+                <input type="search"
+                       class="form-control alphanumeric required"
+                       placeholder=""
+                       id="serial_no"
+                       autocomplete="off"
+                       name="serial_no" value="<?=$_REQUEST["serial_no"]?>">
+                  <div id="serial_suggest_box" class="list-group" style="position:absolute;z-index:999;"></div>
               </div>
               <div class="col-md-2">
            		<input type="submit" class="btn <?=$btncolor?>" name="SHOW" id="" value="SHOW">       

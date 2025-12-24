@@ -7,6 +7,7 @@ if(!access_check_v3($link1, $fun_id, $_SESSION["userid"], $_SESSION["utype"])){e
 $accessState=getAccessState($_SESSION['userid'],$link1);
 $accessLocation=getAccessLocation($_SESSION['userid'],$link1);
 ////// final submit form ////
+
 @extract($_POST);
    if($_POST['save']=='Send SMS'){
       $count=count($parentloc);
@@ -19,8 +20,9 @@ $accessLocation=getAccessLocation($_SESSION['userid'],$link1);
            }else{
 			  $msgsent="SMS Sent";
 			  if($cust_details[1]!='' && $sms!=""){
-				  $res = file_get_contents("http://sms.foxxglove.com/api/mt/SendSMS?user=cancrm&password=123456&senderid=CANCRM&channel=Trans&DCS=0&flashsms=0&number=".$cust_details[1]."&text=".urlencode($sms)); 
-				  //print_r($res);
+                  $senderURL="http://sms.foxxglove.com/api/mt/SendSMS?user=cancrm&password=123456&senderid=CANCRM&channel=Trans&DCS=0&flashsms=0&number=".$cust_details[1]."&text=".urlencode($sms);
+				  $res = file_get_contents($senderURL);
+
              dailyActivity($_SESSION['userid'],$parentloc[$i],"SMS",$msgsent,$ip,$link1,$flag);
 		   	} 
 		   }

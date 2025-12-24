@@ -39,10 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $remark      = trim($_POST['remark']);
 
     //  Validate action value
-    if ($actiontaken !== "1" && $actiontaken !== "2") {
+    $allowed = ['Approved','Cancelled','Draft'];
+    if (!in_array($actiontaken,$allowed)) {
         header("Location: installations_register.php?pid=154&hid=FN10&msg=Invalid action value");
         exit();
     }
+
 
     //  Minimum remark length
     if (strlen($remark) < 5) {
@@ -51,7 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 
-    $action = ($actiontaken === "1") ? "Approved" : "Rejected";
+
+    $action = $actiontaken;   // status is now real text
+    if ($action !== 'Draft' && strlen($remark) < 5) {
+        header("Location: installations_register.php?msg=Remark required");
+        exit();
+    }
+
     $remark = mysqli_real_escape_string($link1, $remark);
     $approveBy = $_SESSION['userid'] ?? 'system';
 
@@ -404,12 +412,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!--                end image-->
             <?php if ($row['status'] !== 'Pending'): ?>
                 <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-comment"></i> Approval Remark
+                    <div class="panel-heading d-flex justify-content-between" style="align-content: center">
+                        <div class="align-content-center"><i class="fa fa-comment"></i> Approval Remark</div>
+                        <button id="row_app" class="btn btn-primary" style="text-transform: uppercase">row</button>
                     </div>
                     <div class="panel-body">
 
-                        <table class="table table-bordered table-hover align-middle shadow-sm">
+                        <table id="approve_col" class="table table-bordered table-hover align-middle shadow-sm">
                             <thead class="table-dark text-center">
                             <tr>
                                 <th>Status</th>
@@ -454,12 +463,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </tr>
                             </tbody>
                         </table>
-
+                        <table id="approve_row" class="hidden table table-bordered table-hover align-middle shadow-sm">
+                            <tr><th>Status</th><td class="text-start">
+                                    <span class="badge rounded-pill
+                        <?= ($row['status'] == 'Approved') ? 'bg-success' : 'bg-danger' ?>">
+                        <?= htmlspecialchars($row['status']) ?>
+                    </span>
+                                </td></tr>
+                            <tr><th>Remark</th><td><?= nl2br(htmlspecialchars($row['remark'])) ?></td></tr>
+                            <tr><th>Approved By</th><td><?= $row['approve_by'] ?></td></tr>
+                            <tr><th>Date</th><td><?= $row['approved_date'] ?></td></tr>
+                            <tr><th>Time</th><td><?= $row['app_time'] ?></td></tr>
+                        </table>
                     </div>
                 </div>
             <?php endif; ?>
             <!-- ================= APPROVAL ACTION ================= -->
-            <?php if ($row['status'] === 'Pending'): ?>
+                <?php $editableStates = ['Pending','Draft']; if (in_array($row['status'], $editableStates)): ?>
                 <form method="post" onsubmit="return formSubmitValidate()">
                     <div class="panel panel-warning">
                         <div class="panel-heading">
@@ -480,8 +500,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 class="form-control"
                                                 required>
                                             <option value="0">-- Select Action --</option>
-                                            <option value="1">Approve</option>
-                                            <option value="2">Reject</option>
+                                            <?php
+                                            $sql="SELECT * FROM status_request WHERE name <> 'Pending'";
+                                            $res = mysqli_query($link1,$sql);
+                                            while($row = mysqli_fetch_array($res)){
+                                                ?>
+                                                <option value="<?=$row['name']?>">
+                                                    <?=$row['name']?>
+                                                </option>
+                                                <?php
+                                            }
+                                            ?>
                                         </select>
                                     </div>
                                 </div>
@@ -599,19 +628,27 @@ include("../includes/connection_close.php");
 </script>
 
 <script>
-    const data=[
-        {
-            name:"employee details",
-            uuid:"STUSR003"
-        },{
-        name:"employee details",
-            uuid:"STUSR004"
+    let isColumnVisible = true;
+    const approve=document.getElementById("approve_col");
+    const approverow=document.getElementById("approve_row");
+    const row_app=document.getElementById("row_app");
+
+    row_app.addEventListener("click",e=>{
+        if(isColumnVisible){
+            approve.classList.add("hidden");
+            approverow.classList.remove("hidden");
+            row_app.innerText = "Column View";
+        }else{
+            // row → hide, column → show
+            approverow.classList.add("hidden");
+            approve.classList.remove("hidden");
+
+            // 🔥 button shows NEXT view
+            row_app.innerText = "Row View";
         }
-    ]
-    //console.log(data);
-    data.forEach((c,i)=>{
-        console.log(c);
+        isColumnVisible = !isColumnVisible;
     });
+
 </script>
 
 </body>

@@ -149,7 +149,7 @@ $(document).ready(function(){
       <form class="form-horizontal" role="form">  
 			
         <button title="Add New Price" type="button" class="btn <?=$btncolor?>" style="float:right;" onClick="window.location.href='addPrice.php?op=add<?=$pagenav?>'"><span>Add New Price</span></button>&nbsp;&nbsp;
-        <button title="Upload Price" type="button" class="btn <?=$btncolor?>" style="float:right;" onClick="window.location.href='price_uploader.php?op=upload<?=$pagenav?>'"><span>Upload Price</span></button> 
+        <button title="Upload Price" type="button" class="btn mx-3 <?=$btncolor?>" style="float:right;" onClick="window.location.href='price_uploader.php?op=upload<?=$pagenav?>'"><span>Upload Price</span></button>
       <div class="form-group"  id="page-wrap" style="margin-left:10px;"><br/><br/>
        <table  width="100%" id="myTable" class="table-striped table-bordered table-hover" align="center">
           <thead>
