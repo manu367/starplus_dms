@@ -31,7 +31,7 @@ if(!access_check_v3($link1, $fun_id, $_SESSION["userid"], $_SESSION["utype"])){e
     });
  </script>
  <script type="text/javascript" src="../js/jquery.validate.js"></script>
-<!--    Auth : Updated By Many Pathak-->
+<!--    Auth ->Updated By Many Pathak-->
  <script>
         $(document).ready(function () {
 
