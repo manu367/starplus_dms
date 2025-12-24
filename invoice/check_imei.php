@@ -253,5 +253,23 @@ if(!access_check_v3($link1, $fun_id, $_SESSION["userid"], $_SESSION["utype"])){e
 include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
+<script>
+    function getAnyDetails(){
+        let arr=[];
+        let a=prompt("How many element you are enter");
+        for(let i=0;i<a;i++){
+            let input=prompt("Eenter the number")
+            arr.push(input);
+        }
+        console.log(arr);
+        const confirm1=confirm("do you want to delete")
+        if(confirm1){
+            let whichelement=prompt("Do you want to delete?");
+            arr.splice(whichelement,1);
+        }
+        console.log(arr);
+    }
+    getAnyDetails();
+</script>
 </body>
 </html>
