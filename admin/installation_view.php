@@ -2,13 +2,12 @@
 
 //tadaApprovalPage.php?id=RVhQLzIwMjUwOTAzL1NVVVNSMDYxLzAwMDE=&pid=51&hid=FN10
 require_once("../config/config.php");
-
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header("Location: installations_register.php?pid=154&hid=FN10&msg=Invalid  value");
     exit();
 }
 
-$id = intval($_GET['id']); // 🔒 basic security
+$id = intval($_GET['id']);
 $sql = "SELECT ind.*, ind.approved_time as app_time, au.name , au.phone as au_phone , au.emailid as au_email FROM installation_data ind LEFT JOIN admin_users au ON ind.userid = au.username WHERE ind.id = $id LIMIT 1";
 //var_dump($sql);exit();
 $res = mysqli_query($link1, $sql);
@@ -176,7 +175,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         });
     </script>
-
+    <script>
+        console.log("hello");
+    </script>
 
 
 </head>
@@ -414,7 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="panel panel-default">
                     <div class="panel-heading d-flex justify-content-between" style="align-content: center">
                         <div class="align-content-center"><i class="fa fa-comment"></i> Approval Remark</div>
-                        <button id="row_app" class="btn btn-primary" style="text-transform: uppercase">row</button>
+                        <button id="row_app" class="btn btn-primary" style="text-transform: uppercase;display: none">row</button>
                     </div>
                     <div class="panel-body">
 
@@ -650,6 +651,18 @@ include("../includes/connection_close.php");
     });
 
 </script>
+<script>
+   const list = [
+        { name: "Employee", nav: "/employee" },
+        { name: "Department", nav: "/employee" },
+        { name: "CRM", nav: "/employee" }
+    ];
 
+    const data = list
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(current => `<li><a href="${current.nav}">${current.name}</a></li>`);
+
+    console.log(data);
+</script>
 </body>
 </html>

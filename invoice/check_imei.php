@@ -254,22 +254,15 @@ include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
 <script>
-    function getAnyDetails(){
-        let arr=[];
-        let a=prompt("How many element you are enter");
-        for(let i=0;i<a;i++){
-            let input=prompt("Eenter the number")
-            arr.push(input);
-        }
-        console.log(arr);
-        const confirm1=confirm("do you want to delete")
-        if(confirm1){
-            let whichelement=prompt("Do you want to delete?");
-            arr.splice(whichelement,1);
-        }
-        console.log(arr);
+    function methodCallStack(){
+        console.log("this is manu pathak");
+        setTimeout(()=>{console.log("hello how are you")},1000);
+        Promise.resolve().then(()=>{
+            console.log("hello how are you this is then methd");
+        });
     }
-    getAnyDetails();
+    Promise.resolve().then(()=>{methodCallStack();})
+    // methodCallStack();
 </script>
 </body>
 </html>

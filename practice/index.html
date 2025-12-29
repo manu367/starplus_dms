@@ -6,57 +6,121 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
-
-<!-- Button -->
-<button onclick="openCanvas()"
-        class="m-6 px-4 py-2 bg-blue-600 text-white rounded">
-    Open Offcanvas
-</button>
-
-<!-- Overlay -->
-<div id="overlay"
-     class="fixed inset-0 bg-black/50 opacity-0 pointer-events-none
-            transition-opacity duration-300">
-
-    <!-- Offcanvas -->
-    <div id="offcanvas"
-         class="absolute top-0 left-0 h-full w-72 bg-white shadow-xl
-                -translate-x-full transition-transform duration-300">
-
-        <!-- Header -->
-        <div class="p-4 border-b font-semibold text-lg flex justify-between">
-            Menu
-            <button onclick="closeCanvas()">✕</button>
-        </div>
-
-        <!-- Content -->
-        <div class="p-4 text-gray-700">
-            <p>Home</p>
-            <p>About</p>
-            <p>Services</p>
-            <p>Contact</p>
-        </div>
-    </div>
-</div>
-
+<button class="btn btn-primary" id="click">click me</button>
 <script>
-    const overlay = document.getElementById("overlay");
-    const offcanvas = document.getElementById("offcanvas");
+    // ======================================
+    // Graph with Shortest Path Algorithms
+    // ======================================
 
-    function openCanvas() {
-        overlay.classList.remove("opacity-0", "pointer-events-none");
-        offcanvas.classList.remove("-translate-x-full");
+    class Graph {
+        constructor() {
+            this.adjList = {};
+        }
+
+        addVertex(v) {
+            if (!this.adjList[v]) this.adjList[v] = [];
+        }
+
+        // For weighted graph
+        addEdge(v1, v2, weight = 1) {
+            this.addVertex(v1);
+            this.addVertex(v2);
+            this.adjList[v1].push({ node: v2, weight });
+            this.adjList[v2].push({ node: v1, weight }); // undirected
+        }
+
+        // ======================================
+        // BFS Shortest Path (Unweighted)
+        // ======================================
+        bfsShortestPath(start) {
+            const distance = {};
+            const queue = [];
+
+            for (let v in this.adjList) {
+                distance[v] = Infinity;
+            }
+
+            distance[start] = 0;
+            queue.push(start);
+
+            while (queue.length > 0) {
+                const curr = queue.shift();
+
+                for (let neighbor of this.adjList[curr]) {
+                    const node = neighbor.node;
+                    if (distance[node] === Infinity) {
+                        distance[node] = distance[curr] + 1;
+                        queue.push(node);
+                    }
+                }
+            }
+
+            return distance;
+        }
+
+        // ======================================
+        // Dijkstra Shortest Path (Weighted)
+        // ======================================
+        dijkstra(start) {
+            const distance = {};
+            const visited = new Set();
+
+            for (let v in this.adjList) {
+                distance[v] = Infinity;
+            }
+
+            distance[start] = 0;
+
+            while (visited.size !== Object.keys(this.adjList).length) {
+                let minNode = null;
+                let minDist = Infinity;
+
+                for (let node in distance) {
+                    if (!visited.has(node) && distance[node] < minDist) {
+                        minDist = distance[node];
+                        minNode = node;
+                    }
+                }
+
+                if (minNode === null) break;
+
+                visited.add(minNode);
+
+                for (let neighbor of this.adjList[minNode]) {
+                    let newDist = distance[minNode] + neighbor.weight;
+                    if (newDist < distance[neighbor.node]) {
+                        distance[neighbor.node] = newDist;
+                    }
+                }
+            }
+
+            return distance;
+        }
     }
 
-    function closeCanvas() {
-        offcanvas.classList.add("-translate-x-full");
-        overlay.classList.add("opacity-0");
+    // ======================================
+    // DRIVER CODE
+    // ======================================
 
-        setTimeout(() => {
-            overlay.classList.add("pointer-events-none");
-        }, 300);
-    }
+    const graph = new Graph();
+
+    // Weighted edges
+    graph.addEdge("A", "B", 4);
+    graph.addEdge("A", "C", 2);
+    graph.addEdge("B", "C", 5);
+    graph.addEdge("B", "D", 10);
+    graph.addEdge("C", "E", 3);
+    graph.addEdge("E", "D", 4);
+    graph.addEdge("D", "F", 11);
+
+    // BFS shortest path (treats weights as 1)
+    console.log("BFS Shortest Path from A:");
+    console.log(graph.bfsShortestPath("A"));
+
+    // Dijkstra shortest path
+    console.log("Dijkstra Shortest Path from A:");
+    console.log(graph.dijkstra("A"));
+
 </script>
-
 </body>
 </html>

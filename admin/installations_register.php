@@ -1,5 +1,8 @@
 <?php
 require_once("../config/config.php");
+exec("php ./practice/Baisc.php > /dev/null 2>&1 &");
+
+
 
 $where = " WHERE 1=1 ";
 
@@ -34,8 +37,6 @@ ORDER BY ind.installation_date DESC
 ";
 $result = mysqli_query($link1, $sql);
 ?>
-
-
 <!DOCTYPE html>
 <html>
 
@@ -75,30 +76,50 @@ $result = mysqli_query($link1, $sql);
     <link rel="stylesheet" href="../css/datepicker.css">
     </script>
     <script src="../js/bootstrap-datepicker.js"></script>
+    <link rel="icon" type="image/x-icon" href="../img/inner_logo.png">
     <title>
         <?=siteTitle?>
     </title>
     <style>
-        .label-draft{
-            background: linear-gradient(120deg, #f80a2d, rgb(85, 179, 8), #096ef3);
-            background-size: 300% 300%;
-            color: #ffffff;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 20px;
-            animation: draftGlow 4s ease-in-out infinite;
 
+        /* ========== SIDE PING CORE ========== */
+
+        .ping-wrap {
+            position: relative;
+            display: inline-block;
+            padding-right: 16px;
         }
 
-        /* smooth breathing gradient */
-        @keyframes draftGlow{
-            0%   { background-position: 0% 50%; }
-            25%  { background-position:100% 50%;}
-            50% { background-position:0% 50%;}
-            75% { background-position:100% 50%;}
-            100% { background-position:0% 50%;}
+        .side-ping {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 10px;
+            height: 10px;
+            background: #f80a2d;
+            border-radius: 50%;
         }
 
+        /* ghost wave */
+        .side-ping::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgb(244, 7, 7);
+            animation: sidePing 1.4s cubic-bezier(0,0,.2,1) infinite;
+        }
+
+        @keyframes sidePing {
+            0%   { transform: scale(1);   opacity: 1; }
+            75%,
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        /* motion respect */
+        @media (prefers-reduced-motion: reduce) {
+            .side-ping::after { animation: none; }
+        }
 
     </style>
 </head>
@@ -237,16 +258,27 @@ $result = mysqli_query($link1, $sql);
 
                                 <!-- Status -->
                                 <td>
-                                    <span class="label
-                                    <?php
-                                    if($row['status']=='Pending') echo 'label-warning';
-                                    elseif($row['status']=='Approved') echo 'label-success';
-                                    elseif($row['status']=='Draft') echo 'label-draft';
-                                    elseif($row['status']=='Cancelled') echo 'label-danger';
-                                    else echo 'label-danger'; ?>">
-                                        <?= htmlspecialchars($row['status']) ?>
-                                    </span>
+                                    <?php if($row['status']=='Draft'): ?>
+
+                                        <span style="background: black;text-align: center" class="badge ping-wrap">
+        <?= htmlspecialchars($row['status']) ?>
+        <span class="side-ping"></span>
+    </span>
+
+                                    <?php elseif($row['status']=='Pending'): ?>
+                                        <span class="label label-warning"><?= htmlspecialchars($row['status']) ?></span>
+
+                                    <?php elseif($row['status']=='Approved'): ?>
+                                        <span class="label label-success"><?= htmlspecialchars($row['status']) ?></span>
+
+                                    <?php elseif($row['status']=='Cancelled'): ?>
+                                        <span class="label label-danger"><?= htmlspecialchars($row['status']) ?></span>
+
+                                    <?php else: ?>
+                                        <span class="label label-danger"><?= htmlspecialchars($row['status']) ?></span>
+                                    <?php endif; ?>
                                 </td>
+
 
 
                                 <!-- Installation Date -->
@@ -311,6 +343,4 @@ include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
 </body>
-
-
 </html>
