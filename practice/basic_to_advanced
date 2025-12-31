@@ -1,153 +1,77 @@
-===================[1.Baisc ]============
-width
-max-width
-min-width
+graph
 
-heigth
-max-heigth
-min-heigth
+nodes = city , and place and things
+edge = connection between nodes
 
-padding
-margin
+nodes = directed and undirected
+edge= weight and unweight
 
-position
-top/bottom/left/rigth
-visibility
-z-index
+type of graph
+direact , undireacted , weight and unweight , Cyclic and Acyclic
 
-border
-outline
-box-shadow
-text-shadow
-opacity
+------------------------ Graph Representations -------------------------
 
-table
-border-collapse
-border-spaceing
-table-layout
-capsion-side
+=============[ Adjacency List  (1lakh node h = 1 node/MB) ]===================
+Memory= Heavy
+Space= O(N^2)
+Edge Check = O(1)
+Trveral = slow
+Real use= Rare
+Scalibility = bad
+===============[ Adjacency Matrix (1lakh node h = 1 node/MB) ]===============
+Memory= tight
+Space= o(N+E)
+Edge Check = O(dev(v))
+Trveral = Fast
+Real use= Almost always
+Scalibility = Excillant
 
-hover , focus , active ,
+graph node traversal
+BFS , DFS
 
+==============[ shortes path ]========
+Unweighted Graph = BFS (Breadth First Search)
+Weighted Graph = Dijkstra’s Algorithm , A* (A Star)
+Negative Weights = Bellman–Ford ,
+All-Pairs Shortest Path = Floyd–Warshall
 
-============[ 2. flexbox and Grid ]================
-flex
-flex-direaction
-flex-basic
-flex-wrap
-flex-grow
-flex-shirnk
+======= [ mimum spenning tree ]=====
+Prim’s  Kruskal’s
+Union–Find (DSU)
+Connectivity tracking = Kruskal, networks
 
-grid
-grid-row
-grid-columns
-grid-tempalte-row
-grid-tempalte-columns
+================== [ CONNECTED COMPONENTS ] ==================
 
-grid-auto-row
-grid-auto-columns
-grid-auto-flow
+DFS Based Component Finder
+Union–Find (DSU)
 
-justify-content
-justify-items
-justify-self
+================== [ CYCLE DETECTION ] ==================
 
-align-content
-align-items
-align-self
+Undirected Graph  = DFS / Union–Find
+Directed Graph    = DFS (Recursion Stack Method)
 
-place-content
-place-items
-place-self
+================== [ TOPOLOGICAL SORT ] ==================
 
-order
-gap
+Kahn’s Algorithm (BFS Based)
+DFS Based Topological Sort
 
-=============================== [ Layout group ]================
+================== [ STRONGLY CONNECTED COMPONENTS ] ==================
 
-aspect-ratio
+Kosaraju’s Algorithm
+Tarjan’s Algorithm
 
-columns
-break-after
-break-before,
+================== [ BRIDGES & ARTICULATION POINTS ] ==================
 
-box-decoration-break
-box-sizing
+Tarjan’s Algorithm
 
-display
-float
-clear
+================== [ FLOW / NETWORK ] ==================
 
-object-fit
-object-position
-overflow
-overscroll-behaviour
+Ford–Fulkerson
+Edmonds–Karp
+Dinic’s Algorithm
 
-=================[ Typograph ]============
-text-align
-color
+================== [ MATCHING ] ==================
+Bipartite Matching (Hungarian, Hopcroft–Karp)
 
-font-size
-font-style
-font-weight
-font-stretch
-font-family
-
-latter-spacing
-line-clamp
-line-height
-
-list-style-image
-list-style-position
-list-style-type
-
-text-decordaion-line
-text-decordaion-color
-text-decordaion-style
-text-decordaion-thickness
-text-decordaion-offset
-
-text-transform
-text-overflow
-text-wrap
-text-indent
-
-vertical-align
-white-space
-word-break
-overflow-wrap
-hyphens
-content
-
-=====================[ backgroud] ===============
-background-attachment
-background-clip
-background-color
-background-image
-background-origin
-background-position
-background-repeat
-background-size
-
-=========================[ transition ] ===============
-transition-property
-transition-behaviour
-transition-duration
-transition-delay
-transition-timing-function
-animation
-
-
-rotate
-scale
-skew
-translate
-
-transform
-transform-origin
-transform-style
-backface-visibility
-perspective
-perspective-origin
 
 

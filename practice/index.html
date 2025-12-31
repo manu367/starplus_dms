@@ -4,123 +4,136 @@
     <meta charset="UTF-8">
     <title>Offcanvas</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .suggest-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 260px;
+            background: #0f172a;
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            font-family: sans-serif;
+            z-index: 9999;
+            animation: popUp 0.5s ease;
+        }
+
+        .suggest-header {
+            background: #2563eb;
+            padding: 12px;
+            border-radius: 16px 16px 0 0;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .suggest-body {
+            padding: 14px;
+        }
+
+        .suggest-body button {
+            width: 100%;
+            margin-top: 8px;
+            background: #38bdf8;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @keyframes popUp {
+            from {transform: translateX(0);}
+            to {transform: translateX(360px);}
+        }
+
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
-<button class="btn btn-primary" id="click">click me</button>
+<div class="suggest-box" id="suggestBox">
+    <div class="suggest-header">
+        🤖 Madad Chahiye?
+        <span onclick="closeSuggest()">✖</span>
+    </div>
+    <div class="suggest-body">
+        <p>Hi! Main yahan hoon tumhe website samjhane ke liye 👋</p>
+        <button>Website kaise use kare?</button>
+        <button>Account kaise banaye?</button>
+        <button>Order kaise kare?</button>
+    </div>
+</div>
 <script>
-    // ======================================
-    // Graph with Shortest Path Algorithms
-    // ======================================
-
-    class Graph {
-        constructor() {
-            this.adjList = {};
-        }
-
-        addVertex(v) {
-            if (!this.adjList[v]) this.adjList[v] = [];
-        }
-
-        // For weighted graph
-        addEdge(v1, v2, weight = 1) {
-            this.addVertex(v1);
-            this.addVertex(v2);
-            this.adjList[v1].push({ node: v2, weight });
-            this.adjList[v2].push({ node: v1, weight }); // undirected
-        }
-
-        // ======================================
-        // BFS Shortest Path (Unweighted)
-        // ======================================
-        bfsShortestPath(start) {
-            const distance = {};
-            const queue = [];
-
-            for (let v in this.adjList) {
-                distance[v] = Infinity;
-            }
-
-            distance[start] = 0;
-            queue.push(start);
-
-            while (queue.length > 0) {
-                const curr = queue.shift();
-
-                for (let neighbor of this.adjList[curr]) {
-                    const node = neighbor.node;
-                    if (distance[node] === Infinity) {
-                        distance[node] = distance[curr] + 1;
-                        queue.push(node);
-                    }
-                }
-            }
-
-            return distance;
-        }
-
-        // ======================================
-        // Dijkstra Shortest Path (Weighted)
-        // ======================================
-        dijkstra(start) {
-            const distance = {};
-            const visited = new Set();
-
-            for (let v in this.adjList) {
-                distance[v] = Infinity;
-            }
-
-            distance[start] = 0;
-
-            while (visited.size !== Object.keys(this.adjList).length) {
-                let minNode = null;
-                let minDist = Infinity;
-
-                for (let node in distance) {
-                    if (!visited.has(node) && distance[node] < minDist) {
-                        minDist = distance[node];
-                        minNode = node;
-                    }
-                }
-
-                if (minNode === null) break;
-
-                visited.add(minNode);
-
-                for (let neighbor of this.adjList[minNode]) {
-                    let newDist = distance[minNode] + neighbor.weight;
-                    if (newDist < distance[neighbor.node]) {
-                        distance[neighbor.node] = newDist;
-                    }
-                }
-            }
-
-            return distance;
+    class Node{
+        constructor(data){
+            this.data=data;
+            this.node=[];
         }
     }
 
-    // ======================================
-    // DRIVER CODE
-    // ======================================
+    class Graph{
+        constructor(){
+            this.adjacencyList=[];
+        }
+        addNode(data){
+            const node=new Node(data);
+            if(this.adjacencyList.length==0){
+                this.adjacencyList.push(node);
+            }
+            else if (this.adjacencyList[data]){
+                console.log("Node does already exist");
+                return;
+            }
+            else{
+                this.adjacencyList.push(node);
+            }
+        }
+        remodeNode(data=''){
+            if(data === undefined || data === null){
+                return;
+            }
+            const index = this.adjacencyList.findIndex(n => n.data === data);
+            if(index === -1){
+                console.log("Node doesn't exist");
+                return;
+            }
+            this.adjacencyList.splice(index, 1);
+        }
+        addEdge(a,b){
+            const node1=this.adjacencyList.find(n => n.data === a);
+            const node2=this.adjacencyList.find(n => n.data === b);
+            if(!node1 || !node2){ console.log("Node doesn't exist");return;}
+            node1.node.push(b);
+            node2.node.push(a);
+
+        }
+
+    }
 
     const graph = new Graph();
-
-    // Weighted edges
-    graph.addEdge("A", "B", 4);
-    graph.addEdge("A", "C", 2);
-    graph.addEdge("B", "C", 5);
-    graph.addEdge("B", "D", 10);
-    graph.addEdge("C", "E", 3);
-    graph.addEdge("E", "D", 4);
-    graph.addEdge("D", "F", 11);
-
-    // BFS shortest path (treats weights as 1)
-    console.log("BFS Shortest Path from A:");
-    console.log(graph.bfsShortestPath("A"));
-
-    // Dijkstra shortest path
-    console.log("Dijkstra Shortest Path from A:");
-    console.log(graph.dijkstra("A"));
+    console.log("Element is Added in graph");
+    graph.addNode('Anu');
+    graph.addNode('Banana');
+    graph.addNode('Cow');
+    graph.addNode('Dog');
+    graph.addNode('Element');
+    graph.addNode('Flg');
+    graph.addNode('Gor');
+    graph.addNode('Horse');
+        graph.addEdge('Anu', 'Horse');
+    graph.addEdge('Anu', 'Banana');
+    graph.addEdge('Anu', 'Dog');
+    graph.addEdge('Anu', 'Element');
+    graph.addEdge('Anu', 'Gor');
+    graph.addEdge('Dog', 'Flg');
+    graph.addEdge('Banana', 'Element');
+    console.log(graph);
+    console.log("Element is Delete from the graph");
+    graph.remodeNode(12);
+    console.log(graph);
 
 </script>
+
 </body>
 </html>
