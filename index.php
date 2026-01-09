@@ -246,14 +246,14 @@ if (isset($_SESSION['userid']) && $_SESSION['userid']) {
 <script>
     function togglePassword() {
         const pwd = document.getElementById("pwd");
-        const icon = document.getElementById("eyeIcon");
+        const icon = document.getEleme  ntById("eyeIcon");
 
         if (pwd.type === "password") {
             pwd.type = "text";
-            icon.src = "./img/hide.png"; // 👁️ open
+            icon.src = "./img/hide.png";
         } else {
             pwd.type = "password";
-            icon.src = "./img/show.png"; // 👁️ closed
+            icon.src = "./img/show.png";
         }
     }
 

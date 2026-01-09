@@ -1,119 +1,65 @@
-<?php
-http_response_code(404);
-
-$errorCode = $_GET['code'] ?? '404';
-$message   = $_GET['msg']  ?? 'The page you are looking for does not exist or may have been moved.';
-$backUrl   = $_GET['back'] ?? '/admin/installations_register.php';
-
-$errors = [
-    '400' => 'Bad Request',
-    '401' => 'Unauthorized',
-    '403' => 'Access Denied',
-    '404' => 'Page Not Found',
-    '500' => 'Internal Server Error'
-];
-
-$title = $errors[$errorCode] ?? 'Error';
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($title) ?></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Tailwind -->
+    <title>Multi-Screen Command Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Animations -->
-    <style>
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .fade-up {
-            animation: fadeUp 0.8s ease-out forwards;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-        .float {
-            animation: float 3s ease-in-out infinite;
-        }
-    </style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center px-4">
+<body class="bg-slate-950 text-slate-200 min-h-screen flex flex-col items-center justify-center p-8">
 
-<div class="max-w-xl w-full bg-white rounded-2xl shadow-xl p-8 text-center fade-up">
+<h1 class="text-4xl font-bold mb-8">🪟 Multi-Screen Command Center</h1>
 
-    <!-- GIF -->
-    <div class="flex justify-center mb-4">
-        <video
-            class="w-56 max-w-full float"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="auto"
-        >
-            <source src="./404%20Error.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </div>
+<button onclick="enable()" class="px-6 py-3 bg-emerald-500 rounded-xl text-black font-bold hover:scale-105 transition">
+    Enable Multi-Screen Access
+</button>
 
+<div id="screens" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 w-full max-w-4xl"></div>
 
-    <!-- Error Code -->
-    <div class="text-6xl font-extrabold text-red-500 mb-2">
-        <?= htmlspecialchars($errorCode) ?>
-    </div>
+<script>
+    let screenDetails = null
 
-    <!-- Title -->
-    <h1 class="text-2xl font-semibold text-slate-800 mb-3">
-        <?= htmlspecialchars($title) ?>
-    </h1>
+    async function enable(){
+        try{
+            const perm = await navigator.permissions.query({name:"window-management"})
+            if(perm.state!=="granted") await navigator.permissions.request({name:"window-management"})
+            screenDetails = await window.getScreenDetails()
+            renderScreens()
+        }catch(e){
+            alert("Permission denied or unsupported browser.")
+        }
+    }
 
-    <!-- Message -->
-    <p class="text-slate-600 leading-relaxed mb-6">
-        <?= htmlspecialchars($message) ?>
-    </p>
+    function renderScreens(){
+        const box = document.getElementById("screens")
+        box.innerHTML = ""
+        screenDetails.screens.forEach((s,i)=>{
+            box.innerHTML += `
+      <div class="bg-slate-900 p-6 rounded-xl border border-slate-700">
+        <h2 class="text-xl font-bold mb-2">Screen ${i+1}</h2>
+        <p>Resolution: ${s.width} x ${s.height}</p>
+        <button onclick="openOn(${i})" class="mt-4 w-full bg-blue-500 py-2 rounded-lg font-semibold text-black hover:opacity-80">
+          Open Dashboard Here
+        </button>
+      </div>`
+        })
+    }
 
-    <!-- Divider -->
-    <div class="h-px bg-slate-200 my-6"></div>
-
-    <!-- Actions -->
-    <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="<?= htmlspecialchars($backUrl) ?>"
-           class="inline-flex items-center justify-center px-6 py-2.5
-                  bg-slate-800 text-white rounded-lg
-                  transition-all duration-300
-                  hover:bg-slate-900 hover:scale-105">
-            ← Go Back
-        </a>
-
-        <a href="/admin/installations_register.php"
-           class="inline-flex items-center justify-center px-6 py-2.5
-                  border border-slate-300 text-slate-700 rounded-lg
-                  transition-all duration-300
-                  hover:bg-slate-100 hover:scale-105">
-            Dashboard
-        </a>
-    </div>
-
-    <!-- Footer -->
-    <p class="mt-8 text-xs text-slate-400">
-        Error logged • Please contact admin if this persists
-    </p>
-
-</div>
+    function openOn(i){
+        const s = screenDetails.screens[i]
+        const win = window.open("about:blank","_blank",
+            `left=${s.left},top=${s.top},width=${s.width},height=${s.height}`)
+        win.document.write(`
+    <html>
+    <body style="margin:0;background:#020617;color:#0f172a;font-family:sans-serif;">
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#020617;color:#34d399;">
+        <h1 style="font-size:60px;">LIVE DASHBOARD SCREEN ${i+1}</h1>
+      </div>
+    </body>
+    </html>`)
+    }
+</script>
 
 </body>
 </html>

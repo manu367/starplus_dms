@@ -13,25 +13,41 @@ if(!access_check_v3($link1, $fun_id, $_SESSION["userid"], $_SESSION["utype"])){e
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?=siteTitle?></title>
 <script src="../js/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.validate.js"></script>
+    <script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
 <link href="../css/font-awesome.min.css" rel="stylesheet">
 <link href="../css/abc.css" rel="stylesheet">
-<script src="../js/bootstrap.min.js"></script>
 <link href="../css/abc2.css" rel="stylesheet">
+
 <link rel="stylesheet" href="../css/bootstrap.min.css">
 <link rel="stylesheet" href="../css/jquery.dataTables.min.css">
-<script type="text/javascript" src="../js/jquery.dataTables.min.js"></script>
-<script>
-$(document).ready(function(){
-	$("#frm1").validate();
-	$('#myTable').dataTable({
-		paging: false,
-		searching: false,
-		ordering:  false,
-		info: false
-	});
-});
-</script>
-<script type="text/javascript" src="../js/jquery.validate.js"></script>
+    <script>
+        $(function(){
+
+            $("#frm1").validate();
+
+            $('#serial_no').on("keyup",function(){
+                let value = $(this).val().trim();
+                if(value.length<1){
+                    $("#serial_suggest_box").hide();
+                    return;
+                }
+
+                $.post("../pagination/ajax_serial_suggest.php",{keyword:value},function(data){
+                    $("#serial_suggest_box").html(data).show();
+                });
+            });
+
+            $(document).on("click",".serial-item",function(){
+                $("#serial_no").val($(this).text());
+                $("#serial_suggest_box").hide();
+            });
+
+        });
+    </script>
+
 </head>
 <body>
 	<div class="container-fluid">
@@ -55,7 +71,8 @@ $(document).ready(function(){
                                 </select>
                             </div>
                             <div class="col-md-4">
-                				<input type="search" class="form-control alphanumeric required" placeholder="Enter serial no. here"  name="serial_no" value="<?=$_REQUEST["serial_no"]?>">
+                				<input type="text" id="serial_no" class="form-control alphanumeric required" placeholder="Enter serial no. here"  name="serial_no" value="<?=$_REQUEST["serial_no"]?>">
+                                <div id="serial_suggest_box" class="list-group" style="position:absolute;z-index:999;"></div>
        			  			</div>
               				<div class="col-md-2">
            						<input type="submit" class="btn <?=$btncolor?>" name="SHOW" id="" value="SHOW">       
@@ -463,9 +480,14 @@ $(document).ready(function(){
 			</div>
 		</div>
 	</div>
+
+    <div id="can" style="display: none;background: rgba(0,0,0,0.07);position: fixed;top: 0;left: 0;width: 100%;height: 100%"></div>
 <?php
 include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
 </body>
+<script>
+    let a = 0;
+</script>
 </html>

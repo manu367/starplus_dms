@@ -6,27 +6,22 @@ exec("php ./practice/Baisc.php > /dev/null 2>&1 &");
 
 $where = " WHERE 1=1 ";
 
-// 🔹 From Date
 if (!empty($_REQUEST['fdate'])) {
     $fromdate = $_REQUEST['fdate'];
     $where .= " AND ind.installation_date >= '$fromdate'";
 }
-// 🔹 To Date
 if (!empty($_REQUEST['tdate'])) {
     $todate = $_REQUEST['tdate'];
     $where .= " AND ind.installation_date <= '$todate'";
 }
-// 🔹 User ID
 if (!empty($_REQUEST['user_id'])) {
     $userid = $_REQUEST['user_id'];
     $where .= " AND ind.userid = '$userid'";
 }
-// 🔹 Status
 if (!empty($_REQUEST['status'])) {
     $status = $_REQUEST['status'];
     $where .= " AND ind.status = '$status'";
 }
-// ✅ USE $where HERE
 $sql = "
 SELECT ind.*, au.name
 FROM installation_data ind
@@ -83,7 +78,6 @@ $result = mysqli_query($link1, $sql);
     <style>
 
         /* ========== SIDE PING CORE ========== */
-
         .ping-wrap {
             position: relative;
             display: inline-block;
@@ -92,8 +86,8 @@ $result = mysqli_query($link1, $sql);
 
         .side-ping {
             position: absolute;
-            top: -6px;
-            right: -6px;
+            top: -2px;
+            right: -3px;
             width: 10px;
             height: 10px;
             background: #f80a2d;

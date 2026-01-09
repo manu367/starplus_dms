@@ -37,7 +37,6 @@ if(!access_check_v3($link1, $fun_id, $_SESSION["userid"], $_SESSION["utype"])){e
 
             $("#serial_no").keyup(function () {
                 let value = $(this).val().trim();
-
                 if (value.length < 1) {
                     $("#serial_suggest_box").hide();
                     return;

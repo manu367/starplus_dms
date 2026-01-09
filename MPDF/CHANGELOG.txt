@@ -547,7 +547,7 @@ Column sums
 -----------
 (Also changed some preg_replace to str_replace to improve performance)
 To use: just add {colsum} to any cells of the table footer <tfoot>
-Add a number to specify a fixed number of decimal points e.g. <td>£{colsum2}</td>  will give you £123.40
+Add a number to specify a fixed number of decimal points e.g. <td>ï¿½{colsum2}</td>  will give you ï¿½123.40
 The width of the column will be calculated using the actual string {colsum} as a placeholder.
 If you need the column to be wider, use underscores "_" to pad it e.g. {colsum2_____}
 
@@ -1270,7 +1270,7 @@ $this->tableMinSizePriority
 Bug fix:
 Complex page with ToC entries ++ (example_ToC_bug4_5_015.php) caused Apache to crash
 AdjustHTML() preg_pattern for matching <hx>... </hx>  <table for keep-together - altered and fixed ? matching 
-Seemed to crash when content="Graph 12" between the <h> - 2 numbers (12) crash, 1 didn't!!!
+Seemed to crash when content="GraphNode 12" between the <h> - 2 numbers (12) crash, 1 didn't!!!
 
 
 4.5.014
@@ -2705,7 +2705,7 @@ function AddExtGState() edited to check if graphics state already exists before 
 
 ASCII-proof code
 ================
-"»¤¬" used as a special identifier in the program changed to "\xbb\xa4\xac" to make the mpdf.php script file immune from someone saving it as a utf-8 encoded file
+"ï¿½ï¿½ï¿½" used as a special identifier in the program changed to "\xbb\xa4\xac" to make the mpdf.php script file immune from someone saving it as a utf-8 encoded file
 
 Images
 ======

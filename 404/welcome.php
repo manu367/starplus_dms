@@ -108,29 +108,41 @@ include("../includes/footer.php");
 include("../includes/connection_close.php");
 ?>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/motion@11.11.13/dist/motion.js"></script>
 <script>
-    const josndata = {
-        category: [
-            { name: "Tanu", order: 2 },
-            { name: "Manu", order: 1 },
-            { name: "Non-IT-1", order: 5 }
-        ],
-        dept: [
-            { name: "HR" },
-            { name: "Tech" }
-        ]
-    };
+    const { animate, scroll } = Motion
+    animate(".uc-wrapper", { scale: [0.4, 1] },
+        { ease: "circInOut", duration: 10 })
+</script>
+<script>
+    class  Node{
+        constructor(data) {
+            this.data=data;
+            this.negihbor=[];
+        }
+    }
+    class GrphNode{
+        constructor() {
+            this.adjaencylist=new Map();
+        }
+        addNde(data){
+            if(data<=0)return;
+            if(this.adjaencylist.has(data))return;
+            this.adjaencylist.set(data,new Node(data));
+        }
+        adEdge(data,data2){
+            if(!this.adjaencylist.has(data))return;
+            if(!this.adjaencylist.has(data2))return;
+            const node1=this.adjaencylist.get(data);
+            const node2=this.adjaencylist.get(data2);
+            node1.negihbor.push(node2);
+            node2.negihbor.push(node1)
+        }
+    }
+    const  graph=new GraphNode();
+    graph.addNode(12);
+    graph.addNode(13);
 
-    Object.keys(josndata).forEach(key => {
-        josndata[key] = josndata[key]
-            .filter(item => item.name !== "Non-IT-1")
-            .sort((a, b) => {
-                if (a.order === undefined || b.order === undefined) return 0;
-                return a.order - b.order;
-            });
-    });
-
-    console.log(josndata);
 </script>
 
 </html>

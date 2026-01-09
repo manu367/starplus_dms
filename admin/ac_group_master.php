@@ -11,6 +11,7 @@ if(isset($_REQUEST['nature'])){$nature=$_REQUEST['nature'];}else{$nature="";}
 //////////// get operational rights
 //$get_opr_rgts = getOprRights($_SESSION['userid'],$_REQUEST['pid'],$link1);
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -72,19 +73,19 @@ $(document).ready(function() {
         	<select name="nature" id="nature"  class="form-control">
                 <option value="" <?php if($_REQUEST['nature']=='all'){ echo "selected";}?>>All</option>
                 <option value="Debit" <?php if($_REQUEST['nature']=="Debit"){echo "selected";}?>>Debit</option>
-                <option value="Credit" <?php if($_REQUEST['nature']=="Credit"){echo "selected";}?>>Credit</option>
-             </select>
-        </div>
-        <div class="col-sm-3 col-md-3 col-lg-3"><label class="col-md-9">Status</label>
-        	<select name="status" id="status" class="form-control">
-                <option value=""<?php if(isset($_REQUEST['status'])){if($_REQUEST['status']==''){ echo "selected";}}?>>All</option>
-                <option value="Active"<?php if(isset($_REQUEST['status'])){if($_REQUEST['status']=="Active"){ echo "selected";}}?>>Active</option>
-                <option value="Deactive"<?php if(isset($_REQUEST['status'])){if($_REQUEST['status']=="Deactive"){ echo "selected";}}?>>Deactive</option>
-            </select>
-        </div>
-        <div class="col-sm-3 col-md-3 col-lg-3"><label class="col-md-6">&nbsp;</label><br/>
-            <input name="pid" id="pid" type="hidden" value="<?=$_REQUEST['pid']?>"/>
-            <input name="hid" id="hid" type="hidden" value="<?=$_REQUEST['hid']?>"/>
+                    <option value="Credit" <?php if($_REQUEST['nature']=="Credit"){echo "selected";}?>>Credit</option>
+                 </select>
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3"><label class="col-md-9">Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value=""<?php if(isset($_REQUEST['status'])){if($_REQUEST['status']==''){ echo "selected";}}?>>All</option>
+                    <option value="Active"<?php if(isset($_REQUEST['status'])){if($_REQUEST['status']=="Active"){ echo "selected";}}?>>Active</option>
+                    <option value="Deactive"<?php if(isset($_REQUEST['status'])){if($_REQUEST['status']=="Deactive"){ echo "selected";}}?>>Deactive</option>
+                </select>
+            </div>
+            <div class="col-sm-3 col-md-3 col-lg-3"><label class="col-md-6">&nbsp;</label><br/>
+                <input name="pid" id="pid" type="hidden" value="<?=$_REQUEST['pid']?>"/>
+                <input name="hid" id="hid" type="hidden" value="<?=$_REQUEST['hid']?>"/>
 			<input name="Submit" type="submit" class="btn<?=$btncolor?>" value="GO"  title="Go!">
         </div>
       </div>
@@ -114,6 +115,22 @@ $(document).ready(function() {
     </div>
   </div>
 </div>
+<script>
+    class Node{
+        constructor(data) {
+            this.data=data;
+            this.negihbor=[];
+        }
+    }
+    class GraphNode{
+        constructor() {
+            this.adjanceylist=new Map();
+        }
+        addNode(data){
+            if(data>=0 || data.has())return;
+        }
+    }
+</script>
 <?php
 include("../includes/footer.php");
 include("../includes/connection_close.php");

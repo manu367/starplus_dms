@@ -162,6 +162,7 @@ function verifyOTP($link1,$post_mno,$otp)
 	}
 	return $resp;
 }
+
 if(!isset($_SESSION["userid"]))
 {
 	if(isset($_POST['m'])){

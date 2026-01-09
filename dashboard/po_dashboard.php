@@ -59,8 +59,6 @@ $orders1='';
 		 }
 	  }
 	//echo $orders1;
-	
-
 ?>
 <!DOCTYPE html>
 <html>

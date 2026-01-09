@@ -1,3 +1,4 @@
+
  <div class="col-sm-3 nav-side-menu" style="padding-left:0px;padding-right:0px;">
     <!--<h4><img src="../img/inner_logo.png" width="200"/></h4>-->
     <div class="brand" style="background-color:#FFFFFF"><img src="../img/inner_logo.png" style="width:210px"/></div>
@@ -141,4 +142,8 @@ function myFunction() {
     }
   }
 }
+document.head.insertAdjacentHTML("beforeend", `
+<link rel="icon" type="image/x-icon" href="../img/inner_logo.png">
+`);
+
 </script>

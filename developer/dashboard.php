@@ -1,1 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Developer Command Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-slate-950 text-slate-200 h-screen flex overflow-hidden">
+
+<!-- ======================================================
+  SIDEBAR
+====================================================== -->
 <?php
+include "./ui/asidebar.php"
+?>
+
+<!-- ======================================================
+  MAIN CONTENT
+====================================================== -->
+<main class="flex-1 overflow-y-auto">
+
+    <!-- TOP BAR -->
+    <header class="sticky top-0 z-10 bg-slate-900 border-b border-slate-800 px-8 py-4 flex justify-between items-center">
+        <div>
+            <h2 class="text-lg font-semibold">System Overview</h2>
+            <p class="text-xs text-slate-400">Live production observability</p>
+        </div>
+
+        <div class="flex items-center gap-4">
+    <span class="px-3 py-1 text-xs rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-600">
+      HEALTHY
+    </span>
+            <span class="text-xs text-slate-400">Last refresh: 5s ago</span>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <section class="p-8 space-y-10">
+
+        <!-- ======================================================
+          KPI CARDS
+        ====================================================== -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+                <p class="text-sm text-slate-400">Requests Today</p>
+                <p class="text-3xl font-bold mt-2">14,982</p>
+                <p class="text-xs text-emerald-400 mt-1">↑ 12% vs yesterday</p>
+            </div>
+
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+                <p class="text-sm text-slate-400">Error Rate</p>
+                <p class="text-3xl font-bold text-red-500 mt-2">0.82%</p>
+                <p class="text-xs text-red-400 mt-1">Spikes at 11:30 AM</p>
+            </div>
+
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+                <p class="text-sm text-slate-400">Downtime</p>
+                <p class="text-3xl font-bold text-orange-400 mt-2">4 min</p>
+                <p class="text-xs text-slate-400 mt-1">Last incident: API</p>
+            </div>
+
+            <div class="bg-slate-900 rounded-xl p-6 border border-slate-800">
+                <p class="text-sm text-slate-400">Active Users</p>
+                <p class="text-3xl font-bold mt-2">1,203</p>
+                <p class="text-xs text-slate-400 mt-1">Peak: 2–4 PM</p>
+            </div>
+
+        </div>
+
+        <!-- ======================================================
+  CHARTS SECTION
+====================================================== -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+
+            <!-- REQUESTS PER HOUR -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="font-semibold mb-4">📈 Requests per Hour</h3>
+                <canvas id="requestsChart" height="120"></canvas>
+            </div>
+
+            <!-- ERROR RATE TREND -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="font-semibold mb-4 text-red-400">🧨 Error Rate Trend</h3>
+                <canvas id="errorChart" height="120"></canvas>
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-8">
+
+            <!-- TRAFFIC BY ENDPOINT -->
+            <div class="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="font-semibold mb-4">📊 Traffic by Endpoint</h3>
+                <canvas id="endpointChart" height="120"></canvas>
+            </div>
+
+            <!-- UPTIME -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="font-semibold mb-4">⏱️ Uptime vs Downtime</h3>
+                <canvas id="uptimeChart"></canvas>
+            </div>
+
+        </div>
+
+
+        <!-- ======================================================
+          TRAFFIC + UPTIME
+        ====================================================== -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+
+            <!-- TRAFFIC -->
+            <div class="xl:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="font-semibold mb-4">Traffic by Endpoint</h3>
+
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between">
+                        <span>/login</span>
+                        <span>3,420</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>/upload_excel_ajax</span>
+                        <span>2,890</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>/dashboard</span>
+                        <span>1,998</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>/health</span>
+                        <span>1,204</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPTIME -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="font-semibold mb-4">Uptime (24h)</h3>
+
+                <ul class="text-sm space-y-2">
+                    <li class="flex justify-between text-emerald-400">
+                        <span>UP</span>
+                        <span>23h 56m</span>
+                    </li>
+                    <li class="flex justify-between text-red-400">
+                        <span>DOWN</span>
+                        <span>4m</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- ======================================================
+          ERROR TABLE
+        ====================================================== -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">Recent Errors</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-slate-400 border-b border-slate-700">
+                    <tr>
+                        <th class="text-left py-2">Time</th>
+                        <th class="text-left py-2">Path</th>
+                        <th class="text-left py-2">Message</th>
+                        <th class="text-left py-2">File</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800">
+                    <tr>
+                        <td class="py-2">11:32</td>
+                        <td class="text-red-400">/admin/addAdminUser_uploader.php</td>
+                        <td>Invalid serial number</td>
+                        <td>Uploader.php:214</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2">10:58</td>
+                        <td class="text-red-400">/api/upload_excel_ajax</td>
+                        <td>CSV format mismatch</td>
+                        <td>Validator.php:88</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ======================================================
+          FEATURE FLAGS
+        ====================================================== -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">Feature Flags</h3>
+
+            <div class="space-y-4 text-sm">
+                <div class="flex justify-between">
+                    <span>Legacy POST Upload</span>
+                    <span class="px-3 py-1 rounded-full bg-red-600/20 text-red-400">DISABLED</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>AJAX Upload</span>
+                    <span class="px-3 py-1 rounded-full bg-emerald-600/20 text-emerald-400">ENABLED</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Dev Sandbox</span>
+                    <span class="px-3 py-1 rounded-full bg-emerald-600/20 text-emerald-400">ACTIVE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================================================
+          LOG VIEWER
+        ====================================================== -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <h3 class="font-semibold mb-4">Live Logs</h3>
+
+            <pre class="bg-black text-green-400 p-4 rounded-lg text-xs h-64 overflow-y-auto">
+[11:44:01] INFO  Request started
+[11:44:02] INFO  CSV validation started
+[11:44:03] WARN  Row 32 serial mismatch
+[11:44:04] ERROR Upload aborted
+[11:44:05] INFO  Rollback success
+  </pre>
+        </div>
+
+    </section>
+
+    <footer class="text-center text-xs text-slate-500 py-6">
+        Developer Command Center • Read-Only Production • Zero Risk
+    </footer>
+
+</main>
+</body>
+<script>
+    /* ======================================================
+      COMMON OPTIONS (DEV FRIENDLY)
+    ====================================================== */
+    const gridColor = '#1e293b';
+    const labelColor = '#cbd5f5';
+
+    /* ======================================================
+      REQUESTS PER HOUR
+    ====================================================== */
+    new Chart(document.getElementById('requestsChart'), {
+        type: 'line',
+        data: {
+            labels: ['00','02','04','06','08','10','12','14','16','18','20','22'],
+            datasets: [{
+                label: 'Requests',
+                data: [120,180,260,540,980,1240,1890,2230,1980,1620,980,540],
+                borderColor: '#38bdf8',
+                backgroundColor: 'rgba(56,189,248,0.15)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: { legend: { labels: { color: labelColor } } },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: labelColor } },
+                y: { grid: { color: gridColor }, ticks: { color: labelColor } }
+            }
+        }
+    });
+
+    /* ======================================================
+      ERROR RATE TREND
+    ====================================================== */
+    new Chart(document.getElementById('errorChart'), {
+        type: 'line',
+        data: {
+            labels: ['00','04','08','12','16','20'],
+            datasets: [{
+                label: 'Error %',
+                data: [0.2,0.4,0.9,0.6,0.3,0.1],
+                borderColor: '#f87171',
+                backgroundColor: 'rgba(248,113,113,0.15)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            plugins: { legend: { labels: { color: labelColor } } },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: labelColor } },
+                y: { grid: { color: gridColor }, ticks: { color: labelColor } }
+            }
+        }
+    });
+
+    /* ======================================================
+      TRAFFIC BY ENDPOINT
+    ====================================================== */
+    new Chart(document.getElementById('endpointChart'), {
+        type: 'bar',
+        data: {
+            labels: ['/login','/upload_ajax','/dashboard','/health'],
+            datasets: [{
+                label: 'Requests',
+                data: [3420,2890,1998,1204],
+                backgroundColor: '#22c55e'
+            }]
+        },
+        options: {
+            plugins: { legend: { labels: { color: labelColor } } },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { color: labelColor } },
+                y: { grid: { color: gridColor }, ticks: { color: labelColor } }
+            }
+        }
+    });
+
+    /* ======================================================
+      UPTIME VS DOWNTIME
+    ====================================================== */
+    new Chart(document.getElementById('uptimeChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Uptime','Downtime'],
+            datasets: [{
+                data: [1436, 4],
+                backgroundColor: ['#22c55e','#ef4444']
+            }]
+        },
+        options: {
+            plugins: { legend: { labels: { color: labelColor } } }
+        }
+    });
+</script>
+
+</html>
