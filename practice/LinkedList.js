@@ -6,30 +6,6 @@ class DNode{
     }
 }
 
-class TreeDataStructure{
-    constructor() {
-        this.root = null;
-    }
-    addNode(data){
-        let node=new DNode();
-        if(this.root === null){
-            this.root = node;
-        }
-
-        // right
-        if(this.root.data<data){
-            this.roo
-        }
-        // left
-        else{
-        }
-    }
-    deleteNode(data){}
-    updateNode(old,newData){}
-    searchData(data){}
-
-}
-
 class DoublyLinkedList{
     constructor(){
         this.head = null;

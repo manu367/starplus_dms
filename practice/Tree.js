@@ -6,7 +6,6 @@ class Node1{
     }
 }
 
-
 class TreeNode{
     constructor(){
         this.root = null;

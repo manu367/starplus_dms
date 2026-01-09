@@ -264,6 +264,7 @@ class Graph {
 
         for (let [neighbor] of this.adjacentList.get(start).neighbor) {
             this.dfs(neighbor, visited);
+            console.log("DFS Traveling")
         }
     }
 }
